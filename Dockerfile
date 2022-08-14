@@ -1,16 +1,20 @@
-# builder image
-FROM golang:bullseye AS build
+# setup project and deps
+FROM golang:bullseye AS init
 
 WORKDIR /go/golang-starter/
 
-COPY README.md go.mod* go.sum* ./
-
-# uncomment next line when there are Go Modules present
-# RUN go get -d -v
+COPY go.mod* go.sum* ./
+RUN go mod download
 
 COPY . ./
-RUN go test ./*/
-RUN go build
+
+# run tests
+FROM init as test
+RUN go test ./cmd/golang-starter/*/
+
+# build binary
+FROM init as build
+RUN CGO_ENABLED=0 go build ./cmd/golang-starter/
 
 # runtime image
 FROM scratch
@@ -18,5 +22,3 @@ FROM scratch
 COPY --from=build /go/golang-starter/golang-starter /go/bin/golang-starter
 # Run the binary.
 ENTRYPOINT ["/go/bin/golang-starter"]
-
-

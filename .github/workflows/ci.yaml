@@ -6,7 +6,7 @@ name: CI
   push:
     branches:
       - main
-      - pre-commits
+      - init
   schedule:
     - cron: "0 1 * * 1"
 
@@ -17,12 +17,12 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
-      -
-        name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-          cache: 'pip'
+          #-
+          #  name: Set up Python
+          #  uses: actions/setup-python@v4
+          #  with:
+          #    python-version: '3.x'
+          #    cache: 'pip'
       -
         name: Run pre-commit
         run: |
@@ -34,21 +34,16 @@ jobs:
     strategy:
       matrix:
         include:
-          - context: samila/
+          - context: .
             tags: |
-              toozej/genartrated:samila
-              ghcr.io/toozej/genartrated:samila
-              quay.io/toozej/genartrated:samila
-          - context: fractals/
-            tags: |
-              toozej/genartrated:fractals
-              ghcr.io/toozej/genartrated:fractals
-              quay.io/toozej/genartrated:fractals
+              toozej/golang-starter:latest
+              ghcr.io/toozej/golang-starter:latest
+              quay.io/toozej/golang-starter:latest
           # - context: service-b
           #  tags: |
-          #    toozej/genartrated:service-b
-          #    ghcr.io/toozej/genartrated:service-b
-          #    quay.io/toozej/genartrated:service-b
+          #    toozej/example:service-b
+          #    ghcr.io/toozej/example:service-b
+          #    quay.io/toozej/example:service-b
     steps:
       -
         name: Checkout
