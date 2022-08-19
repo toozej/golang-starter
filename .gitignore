@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+golang-starter
 
 # Test binary, built with `go test -c`
 *.test

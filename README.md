@@ -15,3 +15,7 @@ Golang starter template
 		- main.go
 		- Dockerfile
 		- Makefile
+
+## changes required to update golang version
+- Dockerfile init image version
+- go.mod golang version

@@ -29,15 +29,17 @@ jobs:
       matrix:
         include:
           - context: .
+            dockerfile: Dockerfile
             tags: |
               toozej/golang-starter:latest
               ghcr.io/toozej/golang-starter:latest
               quay.io/toozej/golang-starter:latest
-          # - context: service-b
-          #  tags: |
-          #    toozej/example:service-b
-          #    ghcr.io/toozej/example:service-b
-          #    quay.io/toozej/example:service-b
+          - context: .
+            dockerfile: Dockerfile.distroless
+            tags: |
+              toozej/golang-starter:distroless
+              ghcr.io/toozej/golang-starter:distroless
+              quay.io/toozej/golang-starter:distroless
     steps:
       -
         name: Checkout

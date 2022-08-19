@@ -1,4 +1,8 @@
 .git
+.github
 .gitignore
+.pre-commit-config.yaml
+docs
 LICENSE
+README.md
 golang-starter
