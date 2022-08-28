@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
 
 	"github.com/toozej/golang-starter/cmd/golang-starter/config"
 	"github.com/toozej/golang-starter/cmd/golang-starter/math"
+	"github.com/toozej/golang-starter/pkg/version"
 )
 
 func main() {
@@ -13,11 +17,26 @@ func main() {
 		panic(fmt.Errorf("invalid application configuration: %s", err))
 	}
 
-	fmt.Println(config.Config.ConfigVar)
+	command := &cobra.Command{
+		Use:   "golang-starter",
+		Short: "golang starter examples",
+		Long:  `Examples of using math library, cobra and viper modules in golang`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(config.Config.ConfigVar)
 
-	addMessage := math.Add(1, 2)
-	fmt.Println(addMessage)
+			addMessage := math.Add(1, 2)
+			fmt.Println(addMessage)
 
-	subMessage := math.Subtract(2, 2)
-	fmt.Println(subMessage)
+			subMessage := math.Subtract(2, 2)
+			fmt.Println(subMessage)
+		},
+	}
+
+	command.AddCommand(version.Command())
+
+	if err := command.Execute(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
 }

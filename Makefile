@@ -22,6 +22,7 @@ LDFLAGS = -s -w \
 .PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run local-precommit docs clean 
 
 all: local-precommit vet test build run clean
+local: local-precommit local-vet local-vendor local-test local-build local-run
 
 vet:
 	docker build --target vet -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
@@ -43,6 +44,9 @@ distroless-run:
 
 local-vet:
 	go vet $(CURDIR)/cmd/golang-starter/*/
+
+local-vendor:
+	go mod vendor
 
 local-test:
 	go test $(CURDIR)/cmd/golang-starter/*/

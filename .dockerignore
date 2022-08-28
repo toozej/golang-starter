@@ -3,6 +3,7 @@
 .gitignore
 .pre-commit-config.yaml
 docs
+vendor
 LICENSE
 README.md
 golang-starter
