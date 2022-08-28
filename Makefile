@@ -19,11 +19,11 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run local-precommit install-precommit-binaries pre-reqs docs clean
+.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run pre-commit-install pre-commit-run pre-commit pre-reqs docs clean
 
-all: local-precommit vet test build run clean
-local: local-precommit local-vet local-vendor local-test local-build local-run
-pre-reqs: install-precommit-binaries
+all: pre-commit vet test build run clean
+local: pre-commit local-vet local-vendor local-test local-build local-run
+pre-reqs: pre-commit-install
 
 vet:
 	docker build --target vet -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
@@ -58,15 +58,25 @@ local-build:
 local-run: 
 	$(CURDIR)/golang-starter
 
-local-precommit:
-	pre-commit install
-	pre-commit run --all
+pre-commit: pre-commit-install pre-commit-run
 
-install-precommit-binaries:
+pre-commit-install:
 	# golangci-lint
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	# goimports
 	go install golang.org/x/tools/cmd/goimports@latest
+	# gosec
+	go install github.com/securego/gosec/v2/cmd/gosec@latest
+	# go-critic
+	go install github.com/go-critic/go-critic/cmd/gocritic@latest
+	# structslop
+	go install github.com/orijtech/structslop/cmd/structslop@latest
+	# install and update pre-commits
+	pre-commit install
+	pre-commit autoupdate
+
+pre-commit-run:
+	pre-commit run --all-files
 
 docs:
 	docker build -f $(CURDIR)/Dockerfile.docs -t toozej/golang-starter:docs . 

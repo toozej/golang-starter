@@ -22,8 +22,8 @@ jobs:
         name: Run pre-commit
         run: |
           pip install pre-commit
-          make install-precommit-binaries
-          pre-commit run --all-files
+          make pre-commit-install
+          make pre-commit-run
 
   docker:
     runs-on: ubuntu-latest
