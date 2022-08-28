@@ -67,6 +67,8 @@ pre-commit-install:
 	go install golang.org/x/tools/cmd/goimports@latest
 	# gosec
 	go install github.com/securego/gosec/v2/cmd/gosec@latest
+	# staticcheck
+	go install honnef.co/go/tools/cmd/staticcheck@latest
 	# go-critic
 	go install github.com/go-critic/go-critic/cmd/gocritic@latest
 	# structslop
