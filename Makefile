@@ -19,10 +19,11 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run local-precommit docs clean 
+.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run local-precommit install-precommit-binaries pre-reqs docs clean
 
 all: local-precommit vet test build run clean
 local: local-precommit local-vet local-vendor local-test local-build local-run
+pre-reqs: install-precommit-binaries
 
 vet:
 	docker build --target vet -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
@@ -60,6 +61,12 @@ local-run:
 local-precommit:
 	pre-commit install
 	pre-commit run --all
+
+install-precommit-binaries:
+	# golangci-lint
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	# goimports
+	go install golang.org/x/tools/cmd/goimports@latest
 
 docs:
 	docker build -f $(CURDIR)/Dockerfile.docs -t toozej/golang-starter:docs . 
