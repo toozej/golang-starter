@@ -35,5 +35,5 @@ jobs:
     steps:
       - uses: anchore/scan-action@v3
         with:
-          image: "goreleaser/goreleaser:latest"
+          image: "toozej/golang-starter:latest"
           fail-build: true
