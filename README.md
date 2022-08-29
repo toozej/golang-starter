@@ -8,14 +8,9 @@ Golang starter template
 	- DOCKERHUB_TOKEN
 	- QUAY_USERNAME
 	- QUAY_TOKEN
-- find/replace module name to new repo name
-	- file structure under cmd/$moduleName/
-	- sed files
-		- go.mod
-		- main.go
-		- Dockerfile
-		- Makefile
+- find/replace golang-starter to new repo name
+	- run `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
+	- to rename with a different GitHub username `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE $GITHUB_USERNAME_GOES_HERE`
 
 ## changes required to update golang version
-- Dockerfile init image version
-- go.mod golang version
+- run `bash -c ./scripts/update_golang_version.sh $NEW_VERSION_GOES_HERE`

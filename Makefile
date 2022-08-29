@@ -73,6 +73,8 @@ pre-commit-install:
 	go install github.com/go-critic/go-critic/cmd/gocritic@latest
 	# structslop
 	go install github.com/orijtech/structslop/cmd/structslop@latest
+	# shellcheck
+	sudo dnf install ShellCheck || sudo apt install shellcheck
 	# install and update pre-commits
 	pre-commit install
 	pre-commit autoupdate

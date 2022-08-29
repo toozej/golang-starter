@@ -24,14 +24,14 @@ repos:
         name: Ensure line-ending is consistent
         description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/mixed_line_ending.py
         files: \.(sh|yaml|yml)$
-          #- id: check-executables-have-shebangs
-          #  name: Checks that non-binary executables have a proper shebang
-          #  description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_executables_have_shebangs.py
-          #  files: \.(sh)$
-          #- id: check-shebang-scripts-are-executable
-          #  name: Checks that scripts with shebangs are executable.
-          #  description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_shebang_scripts_are_executable.py
-          #  files: \.(sh)$
+      - id: check-executables-have-shebangs
+        name: Checks that non-binary executables have a proper shebang
+        description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_executables_have_shebangs.py
+        files: \.(sh)$
+      - id: check-shebang-scripts-are-executable
+        name: Checks that scripts with shebangs are executable.
+        description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_shebang_scripts_are_executable.py
+        files: \.(sh)$
           #- id: check-json
           #  name: Attempts to load all json files to verify syntax.
           #  description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_json.py
@@ -62,6 +62,11 @@ repos:
       - id: go-critic
       # TODO re-enable go-structslop-mod when hook is available in pre-commit-golang
       #- id: go-structslop-mod
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.8.0
+    hooks:
+      - id: shellcheck
 
   - repo: meta
     hooks:
