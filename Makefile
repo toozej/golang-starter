@@ -1,15 +1,22 @@
+# Set sane defaults for Make from https://tech.davis-hansson.com/p/make/
 SHELL = bash
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 
-# Build info.
+# Set default goal such that `make` runs `make help`
+.DEFAULT_GOAL := help
+
+# Build info
 BUILDER = $(shell whoami)@$(shell hostname)
 NOW = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-# Version Control.
+# Version control
 VERSION = $(shell git describe --tags --dirty --always)
 COMMIT = $(shell git rev-parse --short HEAD)
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
-# Linker flags.
+# Linker flags
 PKG = $(shell head -n 1 go.mod | cut -c 8-)
 VER = $(PKG)/version
 LDFLAGS = -s -w \
@@ -19,12 +26,11 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.DEFAULT_GOAL := help
-.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-run pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
-all: pre-commit vet test build run clean
-local: pre-commit local-vet local-vendor local-test local-build local-run
-pre-reqs: pre-commit-install
+all: pre-commit vet clean test build run ## Run default workflow via Docker
+local: pre-commit local-vet local-vendor clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
+pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 
 vet: ## Run `go vet` in Docker
 	docker build --target vet -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
@@ -94,4 +100,4 @@ clean: ## Remove any locally compiled binaries
 	rm -f $(CURDIR)/golang-starter
 
 help: ## Display help text
-	grep -E '^[a-zA-Z_-]+ ?:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+ ?:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
