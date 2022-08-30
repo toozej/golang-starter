@@ -19,48 +19,49 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run pre-commit-install pre-commit-run pre-commit pre-reqs docs clean
+.DEFAULT_GOAL := help
+.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-build local-run pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: pre-commit vet test build run clean
 local: pre-commit local-vet local-vendor local-test local-build local-run
 pre-reqs: pre-commit-install
 
-vet:
+vet: ## Run `go vet` in Docker
 	docker build --target vet -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
 
-test:
+test: ## Run `go test` in Docker
 	docker build --target test -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
 
-build:
+build: ## Build Docker image, including running tests
 	docker build -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
 
-run:
+run: ## Run built Docker image
 	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:latest
 
-distroless-build:
+distroless-build: ## Build Docker image using distroless as final base
 	docker build -f $(CURDIR)/Dockerfile.distroless -t toozej/golang-starter:distroless . 
 
-distroless-run:
+distroless-run: ## Run built Docker image using distroless as final base
 	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:distroless
 
-local-vet:
+local-vet: ## Run `go vet` using locally installed golang toolchain
 	go vet $(CURDIR)/cmd/golang-starter/*/
 
-local-vendor:
+local-vendor: ## Run `go mod vendor` using locally installed golang toolchain
 	go mod vendor
 
-local-test:
+local-test: ## Run `go test` using locally installed golang toolchain
 	go test $(CURDIR)/cmd/golang-starter/*/
 
-local-build:
+local-build: ## Run `go build` using locally installed golang toolchain
 	CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" $(CURDIR)/cmd/golang-starter/
 
-local-run: 
+local-run: ## Run locally built binary
 	$(CURDIR)/golang-starter
 
-pre-commit: pre-commit-install pre-commit-run
+pre-commit: pre-commit-install pre-commit-run ## Install and run pre-commit hooks
 
-pre-commit-install:
+pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	# golangci-lint
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	# goimports
@@ -79,15 +80,18 @@ pre-commit-install:
 	pre-commit install
 	pre-commit autoupdate
 
-pre-commit-run:
+pre-commit-run: ## Run pre-commit hooks against all files
 	pre-commit run --all-files
 
-docs:
+docs: ## Generate and serve documentation
 	docker build -f $(CURDIR)/Dockerfile.docs -t toozej/golang-starter:docs . 
 	docker run --rm --name golang-starter-docs -v $(CURDIR):/package -v $(CURDIR)/docs:/docs toozej/golang-starter:docs
 
-docs-serve:
+docs-serve: ## Serve documentation on http://localhost:9000
 	docker run --rm --name golang-starter-docs-serve -p 9000:3080 -v $(CURDIR)/docs:/data thomsch98/markserv 
 
-clean: 
+clean: ## Remove any locally compiled binaries
 	rm -f $(CURDIR)/golang-starter
+
+help: ## Display help text
+	grep -E '^[a-zA-Z_-]+ ?:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
