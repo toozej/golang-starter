@@ -13,7 +13,7 @@ RUN go vet ./cmd/golang-starter/*/
 
 # run tests
 FROM init as test
-RUN go test ./cmd/golang-starter/*/
+RUN go test -coverprofile c.out -v ./cmd/golang-starter/*/
 
 # build binary
 FROM init as build
@@ -22,7 +22,7 @@ ARG LDFLAGS
 RUN CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" ./cmd/golang-starter/
 
 # runtime image including CA certs and tzdata
-FROM gcr.io/distroless/static-debian11
+FROM gcr.io/distroless/static-debian11:latest
 # Copy our static executable.
 COPY --from=build /go/golang-starter/golang-starter /go/bin/golang-starter
 # Run the binary.

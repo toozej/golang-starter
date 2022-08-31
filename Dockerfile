@@ -13,7 +13,7 @@ RUN go vet ./cmd/golang-starter/*/
 
 # run tests
 FROM init as test
-RUN go test ./cmd/golang-starter/*/
+RUN go test -coverprofile c.out -v ./cmd/golang-starter/*/
 
 # build binary
 FROM init as build

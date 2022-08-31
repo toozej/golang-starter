@@ -45,6 +45,7 @@ repos:
         description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_yaml.py
         files: \.(yaml)$
 
+  # Golang formatting, static analysis, and linting
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.0
     hooks:
@@ -54,6 +55,7 @@ repos:
       - id: go-unit-tests
       - id: go-build
 
+  # Golang security and static analysis
   - repo: https://github.com/tekwizely/pre-commit-golang
     rev: v1.0.0-beta.5
     hooks:
@@ -63,10 +65,26 @@ repos:
       # TODO re-enable go-structslop-mod when hook is available in pre-commit-golang
       #- id: go-structslop-mod
 
+  # run shellcheck on Bash scripts
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.8.0
     hooks:
       - id: shellcheck
+
+  # lint Dockerfile
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.10.0
+    hooks:
+      - id: hadolint-docker
+        args: ["--ignore", "DL3007"]
+
+  # lint Makefile
+  # uncomment once https://github.com/mrtazz/checkmake/pull/69 merged
+  #- repo: https://github.com/mrtazz/checkmake/
+  #  rev: main
+  #  hooks:
+  #    - id: checkmake
+  #      files: Makefile
 
   - repo: meta
     hooks:

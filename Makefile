@@ -26,7 +26,7 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-run install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build run distroless-build distroless-run local local-vet local-test local-run install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: pre-commit vet clean test build run ## Run default workflow via Docker
 local: pre-commit local-vet local-vendor clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
@@ -57,7 +57,7 @@ local-vendor: ## Run `go mod vendor` using locally installed golang toolchain
 	go mod vendor
 
 local-test: ## Run `go test` using locally installed golang toolchain
-	go test $(CURDIR)/cmd/golang-starter/*/
+	go test -coverprofile c.out -v $(CURDIR)/cmd/golang-starter/*/
 
 local-build: ## Run `go build` using locally installed golang toolchain
 	CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" $(CURDIR)/cmd/golang-starter/
@@ -86,6 +86,8 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	go install github.com/orijtech/structslop/cmd/structslop@latest
 	# shellcheck
 	sudo dnf install ShellCheck || sudo apt install shellcheck
+	# checkmake
+	go install github.com/mrtazz/checkmake/cmd/checkmake@latest
 	# install and update pre-commits
 	pre-commit install
 	pre-commit autoupdate

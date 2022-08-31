@@ -2,8 +2,15 @@
 .github
 .gitignore
 .pre-commit-config.yaml
+.grype.yaml
+c.out
 docs
 vendor
 LICENSE
+CREDITS.md
 README.md
+checkmake.ini
+Makefile
+Dockerfile*
+docker-compose.yml
 golang-starter
