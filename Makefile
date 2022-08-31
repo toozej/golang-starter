@@ -26,7 +26,7 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-run pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build run distroless-build distroless-run local-vet local-test local-run install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: pre-commit vet clean test build run ## Run default workflow via Docker
 local: pre-commit local-vet local-vendor clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
@@ -64,6 +64,10 @@ local-build: ## Run `go build` using locally installed golang toolchain
 
 local-run: ## Run locally built binary
 	$(CURDIR)/golang-starter
+
+install: local-build ## Install compiled binary to local machine
+	sudo cp $(CURDIR)/golang-starter /usr/local/bin/golang-starter
+	sudo chmod 0755 /usr/local/bin/golang-starter
 
 pre-commit: pre-commit-install pre-commit-run ## Install and run pre-commit hooks
 

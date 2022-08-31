@@ -1,0 +1,9 @@
+---
+version: "3"
+services:
+  golang-starter:
+    container_name: golang-starter
+    image: toozej/golang-starter:latest
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=false"
