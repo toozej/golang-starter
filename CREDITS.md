@@ -34,6 +34,8 @@ Below is a list of various projects and code-snippets used in this golang-starte
     - <https://tech.davis-hansson.com/p/make/>
 - help text generator
     - <https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html>
+- checkmake
+	- <https://github.com/mrtazz/checkmake/issues/25>
 
 ## GitHub Actions
 - generate and auto-commit docs
@@ -42,8 +44,12 @@ Below is a list of various projects and code-snippets used in this golang-starte
     - <https://github.com/goreleaser/nfpm/blob/main/.github/workflows/build.yml>
 - security scanning
     - <https://github.com/goreleaser/goreleaser/tree/main/.github/workflows>
+	- <https://github.com/aquasecurity/trivy-action>
 
 ## Pre-Commit
 - <https://github.com/dnephin/pre-commit-golang>
 - <https://github.com/tekwizely/pre-commit-golang>
 - <https://github.com/koalaman/shellcheck-precommit>
+- <https://github.com/hadolint/hadolint>
+- <https://github.com/mrtazz/checkmake/pull/69>
+- <https://github.com/trussworks/pre-commit-hooks#goreleaser-check>

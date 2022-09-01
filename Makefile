@@ -1,4 +1,4 @@
-# Set sane defaults for Make from https://tech.davis-hansson.com/p/make/
+# Set sane defaults for Make
 SHELL = bash
 .DELETE_ON_ERROR:
 MAKEFLAGS += --warn-undefined-variables
@@ -26,7 +26,7 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run distroless-build distroless-run local local-vet local-test local-run install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: pre-commit vet clean test build run ## Run default workflow via Docker
 local: pre-commit local-vet local-vendor clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
@@ -43,6 +43,14 @@ build: ## Build Docker image, including running tests
 
 run: ## Run built Docker image
 	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:latest
+
+deploy: test build ## Run Docker Compose project with build Docker image
+	docker-compose -f docker-compose.yml down --remove-orphans
+	docker-compose -f docker-compose.yml pull
+	docker-compose -f docker-compose.yml up -d
+
+stop: ## Stop running Docker Compose project
+	docker-compose -f docker-compose.yml down --remove-orphans
 
 distroless-build: ## Build Docker image using distroless as final base
 	docker build -f $(CURDIR)/Dockerfile.distroless -t toozej/golang-starter:distroless . 
@@ -65,6 +73,10 @@ local-build: ## Run `go build` using locally installed golang toolchain
 local-run: ## Run locally built binary
 	$(CURDIR)/golang-starter
 
+local-release: local-test local-build ## Release assets using locally installed golang toolchain and goreleaser
+	goreleaser check
+	goreleaser release
+
 install: local-build ## Install compiled binary to local machine
 	sudo cp $(CURDIR)/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
@@ -85,15 +97,20 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	# structslop
 	go install github.com/orijtech/structslop/cmd/structslop@latest
 	# shellcheck
-	sudo dnf install ShellCheck || sudo apt install shellcheck
+	command -v shellcheck || sudo dnf install -y ShellCheck || sudo apt install -y shellcheck
 	# checkmake
 	go install github.com/mrtazz/checkmake/cmd/checkmake@latest
+	# goreleaser
+	go install github.com/goreleaser/goreleaser@latest
 	# install and update pre-commits
 	pre-commit install
 	pre-commit autoupdate
 
 pre-commit-run: ## Run pre-commit hooks against all files
 	pre-commit run --all-files
+	# manually run the following checks since their pre-commits aren't working
+	checkmake Makefile
+	goreleaser check
 
 docs: ## Generate and serve documentation
 	docker build -f $(CURDIR)/Dockerfile.docs -t toozej/golang-starter:docs . 

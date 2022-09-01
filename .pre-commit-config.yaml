@@ -86,6 +86,13 @@ repos:
   #    - id: checkmake
   #      files: Makefile
 
+  # goreleaser config check
+  # uncomment when it works again, currently not reading .goreleaser.yml file
+  #- repo: https://github.com/trussworks/pre-commit-hooks
+  #  rev: v1.1.1
+  #  hooks:
+  #    - id: goreleaser-check
+
   - repo: meta
     hooks:
       - id: check-hooks-apply
