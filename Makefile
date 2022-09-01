@@ -29,7 +29,7 @@ LDFLAGS = -s -w \
 .PHONY: all vet test build run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: pre-commit vet clean test build run ## Run default workflow via Docker
-local: pre-commit local-vet local-vendor clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
+local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
 pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 
 vet: ## Run `go vet` in Docker
@@ -57,6 +57,9 @@ distroless-build: ## Build Docker image using distroless as final base
 
 distroless-run: ## Run built Docker image using distroless as final base
 	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:distroless
+
+local-update-deps: ## Run `go get -t -u ./...` to update Go module dependencies
+	go get -t -u ./...
 
 local-vet: ## Run `go vet` using locally installed golang toolchain
 	go vet $(CURDIR)/cmd/golang-starter/*/
