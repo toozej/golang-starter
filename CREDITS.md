@@ -12,6 +12,7 @@ Below is a list of various projects and code-snippets used in this golang-starte
 ## Golang Module Usage and Upgrading
 - <https://github.com/jaegertracing/jaeger>
 - <https://stackoverflow.com/a/60675491>
+- <https://golang.cafe/blog/how-to-upgrade-golang-dependencies.html>
 
 ## SBOM and Signing
 - <https://carlosbecker.com/posts/goreleaser-cosign/>

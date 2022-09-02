@@ -32,7 +32,8 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate
+        }} -X main.builtBy=goreleaser
 
 universal_binaries:
   - replace: false
@@ -131,7 +132,8 @@ docker_manifests:
       - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-arm64'
 
 archives:
-  - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end
+      }}'
     replacements:
       darwin: Darwin
       linux: Linux

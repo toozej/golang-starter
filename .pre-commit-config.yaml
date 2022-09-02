@@ -45,6 +45,13 @@ repos:
         description: https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/check_yaml.py
         files: \.(yaml)$
 
+  # format yaml
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.2
+    hooks:
+      - id: yamlfmt
+        args: [--mapping, "2", --sequence, "4", --offset, "2", --width, "88", --preserve-quotes]
+
   # Golang formatting, static analysis, and linting
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.0

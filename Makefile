@@ -28,7 +28,7 @@ LDFLAGS = -s -w \
 
 .PHONY: all vet test build run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
-all: pre-commit vet clean test build run ## Run default workflow via Docker
+all: vet pre-commit clean test build run ## Run default workflow via Docker
 local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
 pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 

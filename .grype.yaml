@@ -1,3 +1,4 @@
+---
 add-cpes-if-none: true
 fail-on-severity: high
 output: table
