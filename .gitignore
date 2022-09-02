@@ -14,3 +14,8 @@ golang-starter
 
 # Dependency directories (remove the comment below to include it)
 vendor/
+
+# Generated directories
+completions/
+manpages/
+docs/

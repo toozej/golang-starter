@@ -62,13 +62,13 @@ local-update-deps: ## Run `go get -t -u ./...` to update Go module dependencies
 	go get -t -u ./...
 
 local-vet: ## Run `go vet` using locally installed golang toolchain
-	go vet $(CURDIR)/cmd/golang-starter/*/
+	go vet $(CURDIR)/...
 
 local-vendor: ## Run `go mod vendor` using locally installed golang toolchain
 	go mod vendor
 
 local-test: ## Run `go test` using locally installed golang toolchain
-	go test -coverprofile c.out -v $(CURDIR)/cmd/golang-starter/*/
+	go test -coverprofile c.out -v $(CURDIR)/...
 
 local-build: ## Run `go build` using locally installed golang toolchain
 	CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" $(CURDIR)/cmd/golang-starter/

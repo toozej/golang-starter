@@ -4,7 +4,9 @@
 .pre-commit-config.yaml
 .grype.yaml
 c.out
+completions
 docs
+manpages
 vendor
 LICENSE
 CREDITS.md

@@ -6,8 +6,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/toozej/golang-starter/cmd/golang-starter/config"
-	"github.com/toozej/golang-starter/cmd/golang-starter/math"
+	"github.com/toozej/golang-starter/internal/math"
+	"github.com/toozej/golang-starter/pkg/config"
+	"github.com/toozej/golang-starter/pkg/man"
 	"github.com/toozej/golang-starter/pkg/version"
 )
 
@@ -32,7 +33,10 @@ func main() {
 		},
 	}
 
-	command.AddCommand(version.Command())
+	command.AddCommand(
+		man.NewManCmd(),
+		version.Command(),
+	)
 
 	if err := command.Execute(); err != nil {
 		fmt.Println(err.Error())

@@ -4,7 +4,11 @@ go 1.19
 
 require github.com/spf13/viper v1.12.0
 
-require github.com/spf13/cobra v1.5.0
+require (
+	github.com/muesli/mango-cobra v1.2.0
+	github.com/muesli/roff v0.1.0
+	github.com/spf13/cobra v1.5.0
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
@@ -12,6 +16,8 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/muesli/mango v0.1.0 // indirect
+	github.com/muesli/mango-pflag v0.1.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/spf13/afero v1.9.2 // indirect

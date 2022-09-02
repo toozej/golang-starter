@@ -9,11 +9,11 @@ RUN go mod download
 COPY . ./
 
 FROM init as vet
-RUN go vet ./cmd/golang-starter/*/ 
+RUN go vet ./...
 
 # run tests
 FROM init as test
-RUN go test -coverprofile c.out -v ./cmd/golang-starter/*/
+RUN go test -coverprofile c.out -v ./...
 
 # build binary
 FROM init as build
