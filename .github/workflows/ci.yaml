@@ -1,6 +1,7 @@
 ---
-name: CI
-'on':
+name: ci
+
+on:
   pull_request:
   workflow_dispatch:
   push:
@@ -21,8 +22,7 @@ jobs:
       - name: Run pre-commit
         run: |
           pip install pre-commit
-          make pre-commit-install
-          make pre-commit-run
+          make pre-commit
 
   docker:
     runs-on: ubuntu-latest
