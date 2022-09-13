@@ -18,5 +18,8 @@ mv "cmd/${OLD_PROJECT_NAME}" "cmd/${NEW_PROJECT_NAME}"
 # rename from $OLD_PROJECT_NAME to $NEW_PROJECT_NAME
 grep -rl --exclude-dir=.git/ ${OLD_PROJECT_NAME} . | xargs sed -i "" -e "s/${OLD_PROJECT_NAME}/${NEW_PROJECT_NAME}/g"
 
+# truncate existing CREDITS.md file and replace its contents with link to template repo's CREDITS.md file
+echo "https://raw.githubusercontent.com/toozej/golang-starter/main/CREDITS.md" > CREDITS.md
+
 # show diff output so user can verify their changes
 git diff

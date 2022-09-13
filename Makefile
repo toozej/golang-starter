@@ -105,6 +105,8 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	go install github.com/mrtazz/checkmake/cmd/checkmake@latest
 	# goreleaser
 	go install github.com/goreleaser/goreleaser@latest
+	# cosign
+	go install github.com/sigstore/cosign/cmd/cosign@latest
 	# install and update pre-commits
 	pre-commit install
 	pre-commit autoupdate
