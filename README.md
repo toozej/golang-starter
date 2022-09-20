@@ -8,6 +8,7 @@ Golang starter template
 	- DOCKERHUB_TOKEN
 	- QUAY_USERNAME
 	- QUAY_TOKEN
+    - SNYK_TOKEN
 - find/replace golang-starter to new repo name
 	- run `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
 	- to rename with a different GitHub username `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE $GITHUB_USERNAME_GOES_HERE`
