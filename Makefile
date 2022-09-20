@@ -26,7 +26,7 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release-test local-release install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: vet pre-commit clean test build run ## Run default workflow via Docker
 local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
@@ -76,7 +76,11 @@ local-build: ## Run `go build` using locally installed golang toolchain
 local-run: ## Run locally built binary
 	$(CURDIR)/golang-starter
 
-local-release: local-test local-build ## Release assets using locally installed golang toolchain and goreleaser
+local-release-test: ## Build assets and test goreleaser config using locally installed golang toolchain and goreleaser
+	goreleaser check
+	goreleaser build --rm-dist --snapshot
+
+local-release: local-test ## Release assets using locally installed golang toolchain and goreleaser
 	goreleaser check
 	goreleaser release
 
@@ -105,6 +109,8 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	go install github.com/mrtazz/checkmake/cmd/checkmake@latest
 	# goreleaser
 	go install github.com/goreleaser/goreleaser@latest
+	# syft
+	go install github.com/anchore/syft/cmd/syft@latest
 	# cosign
 	go install github.com/sigstore/cosign/cmd/cosign@latest
 	# install and update pre-commits
