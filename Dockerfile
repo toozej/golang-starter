@@ -25,8 +25,5 @@ RUN CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" ./cmd/golang-starter/
 FROM scratch
 # Copy our static executable.
 COPY --from=build /go/golang-starter/golang-starter /go/bin/golang-starter
-# Expose port for publishing as web service
-# EXPOSE 8080
 # Run the binary.
 ENTRYPOINT ["/go/bin/golang-starter"]
-
