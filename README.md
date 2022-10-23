@@ -2,7 +2,7 @@
 Golang starter template
 
 ## changes required to use this as a starter template
-- ensure new repo has the following GitHub Actions Secrets
+- ensure new repo has the following GitHub Actions Secrets and local shell exports/environment variables
     - GH_TOKEN
     - DOCKERHUB_USERNAME
     - DOCKERHUB_TOKEN
