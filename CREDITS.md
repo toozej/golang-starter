@@ -16,6 +16,9 @@ Below is a list of various projects and code-snippets used in this golang-starte
 
 ## SBOM and Signing
 - <https://carlosbecker.com/posts/goreleaser-cosign/>
+- <https://goreleaser.com/customization/sign/>
+- <https://goreleaser.com/customization/docker_sign/>
+- <https://github.com/marketplace/actions/cosign-installer>
 
 ## Goreleaser
 - publish rpm, deb, apk packages to GitHub releases
