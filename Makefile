@@ -26,11 +26,11 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release-test local-release local-verify install get-cosign-pub-key pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: vet pre-commit clean test build verify run ## Run default workflow via Docker
-local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain
-local-release-verify: local-release local-verify ## Release and verify using locally installed Golang toolchain
+local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
+local-release-verify: local-release local-sign local-verify ## Release and verify using locally installed Golang toolchain
 pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 
 vet: ## Run `go vet` in Docker
@@ -87,20 +87,36 @@ local-release-test: ## Build assets and test goreleaser config using locally ins
 	goreleaser check
 	goreleaser build --rm-dist --snapshot
 
-local-release: local-test ## Release assets using locally installed golang toolchain and goreleaser
+local-release: local-test docker-login ## Release assets using locally installed golang toolchain and goreleaser
 	if test -e $(CURDIR)/golang-starter.key && test -e $(CURDIR)/.env; then \
 		source $(CURDIR)/.env && goreleaser release --rm-dist; \
 	else \
 		echo "no cosign private key found at $(CURDIR)/golang-starter.key. Cannot release."; \
 	fi
 
+local-sign: local-test ## Sign locally installed golang toolchain and cosign
+	if test -e $(CURDIR)/golang-starter.key && test -e $(CURDIR)/.env; then \
+		source $(CURDIR)/.env && cosign sign-blob --key=$(CURDIR)/golang-starter.key --output-signature=$(CURDIR)/golang-starter.sig $(CURDIR)/golang-starter; \
+	else \
+		echo "no cosign private key found at $(CURDIR)/golang-starter.key. Cannot release."; \
+	fi
+
 local-verify: get-cosign-pub-key ## Verify locally compiled binary
 	# cosign here assumes you're using Linux AMD64 binary
-	cosign verify-blob --key $(CURDIR)/golang-starter.pub --signature $(CURDIR)/dist/golang-starter_linux_amd64/golang-starter.sig $(CURDIR)/golang-starter
+	cosign verify-blob --key $(CURDIR)/golang-starter.pub --signature $(CURDIR)/golang-starter.sig $(CURDIR)/golang-starter
 
 install: local-build local-verify ## Install compiled binary to local machine
 	sudo cp $(CURDIR)/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
+
+docker-login: ## Login to Docker registries used to publish images to
+	if test -e $(CURDIR)/.env; then \
+		source $(CURDIR)/.env && echo $${DOCKERHUB_TOKEN} | docker login docker.io --username $${DOCKERHUB_USERNAME} --password-stdin; \
+		source $(CURDIR)/.env && echo $${QUAY_TOKEN} | docker login quay.io --username $${QUAY_USERNAME} --password-stdin; \
+		source $(CURDIR)/.env && echo $${GITHUB_GHCR_TOKEN} | docker login ghcr.io --username $${GITHUB_USERNAME} --password-stdin; \
+	else \
+		echo "No container registry credentials found, need to add them to ./.env. See README.md for more info"; \
+	fi
 
 pre-commit: pre-commit-install pre-commit-run ## Install and run pre-commit hooks
 

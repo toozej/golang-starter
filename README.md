@@ -4,13 +4,14 @@ Golang starter template
 ## changes required to use this as a starter template
 - ensure new repo has the following GitHub Actions Secrets and local shell exports/environment variables stored in `./.env`
     - GH_TOKEN
+    - GH_GHCR_TOKEN
     - DOCKERHUB_USERNAME
     - DOCKERHUB_TOKEN
     - QUAY_USERNAME
     - QUAY_TOKEN
     - SNYK_TOKEN
     - COSIGN_PRIVATE_KEY
-    - COSIGN_PRIVATE_KEY_PASSWORD
+    - COSIGN_PASSWORD
 - find/replace golang-starter to new repo name
     - run `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
     - to rename with a different GitHub username `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE $GITHUB_USERNAME_GOES_HERE`

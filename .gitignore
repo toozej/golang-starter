@@ -1,6 +1,7 @@
-# Cosign private key
+# Cosign
 golang-starter.key
 cosign.key
+*.sig
 
 # local secret environment variables
 .env
