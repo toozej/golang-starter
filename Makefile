@@ -26,10 +26,10 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release-test local-release install pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release-test local-release local-verify install get-cosign-pub-key pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
-all: vet pre-commit clean test build run ## Run default workflow via Docker
-local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-run ## Run default workflow using locally installed Golang toolchain 
+all: vet pre-commit clean test build verify run ## Run default workflow via Docker
+local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-verify local-run ## Run default workflow using locally installed Golang toolchain 
 pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 
 vet: ## Run `go vet` in Docker
@@ -39,7 +39,13 @@ test: ## Run `go test` in Docker
 	docker build --target test -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
 
 build: ## Build Docker image, including running tests
-	docker build -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
+	docker build -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest .
+
+get-cosign-pub-key: ## Get golang-starter Cosign public key from GitHub
+	test -f $(CURDIR)/golang-starter.pub || curl --silent https://raw.githubusercontent.com/toozej/golang-starter/main/golang-starter.pub -O
+
+verify: get-cosign-pub-key ## Verify Docker image with Cosign
+	cosign verify --key $(CURDIR)/golang-starter.pub toozej/golang-starter:latest
 
 run: ## Run built Docker image
 	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:latest
@@ -81,10 +87,17 @@ local-release-test: ## Build assets and test goreleaser config using locally ins
 	goreleaser build --rm-dist --snapshot
 
 local-release: local-test ## Release assets using locally installed golang toolchain and goreleaser
-	goreleaser check
-	goreleaser release
+	if test -e $(CURDIR)/golang-starter.key; then
+		goreleaser release
+	else
+		echo "no cosign private key found at $(CURDIR)/golang-starter.key. Cannot release."
+	fi
 
-install: local-build ## Install compiled binary to local machine
+local-verify: get-cosign-pub-key ## Verify locally compiled binary
+	# cosign here assumes you're using Linux AMD64 binary
+	cosign verify --key $(CURDIR)/golang-starter.pub --signature $(CURDIR)/dist/golang-starter_linux_amd64/golang-starter.sig $(CURDIR)/golang-starter
+
+install: local-build local-verify ## Install compiled binary to local machine
 	sudo cp $(CURDIR)/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
 

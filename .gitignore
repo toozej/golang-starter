@@ -1,3 +1,7 @@
+# Cosign private key
+golang-starter.key
+cosign.key
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

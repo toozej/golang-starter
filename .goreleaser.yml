@@ -71,7 +71,6 @@ changelog:
     - title: Other work
       order: 9999
 
-# TODO remove building and publishing Docker images from GHA "ci" workflow
 dockers:
   - image_templates:
       - 'toozej/golang-starter:{{ .Tag }}-amd64'
@@ -307,38 +306,26 @@ nfpms:
 sboms:
   - artifacts: archive
 
-#signs:
-#  - cmd: cosign
-#    # from https://goreleaser.com/ci/actions/
-#    artifacts: checksum
-#    args:
-#      - "--batch"
-#      - "-u"
-#      - "{{ .Env.GPG_FINGERPRINT }}"
-#      - "--output"
-#      - "${signature}"
-#      - "--detach-sign"
-#      - "${artifact}"
-#    # from https://github.com/goreleaser/goreleaser/blob/main/.goreleaser.yaml#L275-L279
-#    #env:
-#    #  - COSIGN_EXPERIMENTAL=1
-#    #certificate: '${artifact}.pem'
-#    #output: true
-#    #args:
-#    #  - sign-blob
-#    #  - '--output-certificate=${certificate}'
-#    #  - '--output-signature=${signature}'
-#    #  - '${artifact}'
-#
-#docker_signs:
-#  - cmd: cosign
-#    env:
-#      - COSIGN_EXPERIMENTAL=1
-#    artifacts: manifests
-#    output: true
-#    args:
-#      - 'sign'
-#      - '${artifact}'
+signs:
+  - cmd: cosign
+    stdin: '{{ .Env.COSIGN_PRIVATE_KEY_PASSWORD }}'
+    output: true
+    args:
+      - 'sign-blob'
+      - '--key golang-starter.key'
+      - '--output-signature ${signature}'
+      - '${artifact}'
+    artifacts: all
+
+docker_signs:
+  - cmd: cosign
+    artifacts: all
+    stdin: '{{ .Env.COSIGN_PRIVATE_KEY_PASSWORD }}'
+    output: true
+    args:
+      - 'sign'
+      - '--key golang-starter.key'
+      - '${artifact}'
 
 milestones:
   - close: true
