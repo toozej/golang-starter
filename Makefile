@@ -88,8 +88,8 @@ local-release-test: ## Build assets and test goreleaser config using locally ins
 	goreleaser build --rm-dist --snapshot
 
 local-release: local-test ## Release assets using locally installed golang toolchain and goreleaser
-	if test -e $(CURDIR)/golang-starter.key; then \
-		goreleaser release --rm-dist; \
+	if test -e $(CURDIR)/golang-starter.key && test -e $(CURDIR)/.env; then \
+		source $(CURDIR)/.env && goreleaser release --rm-dist; \
 	else \
 		echo "no cosign private key found at $(CURDIR)/golang-starter.key. Cannot release."; \
 	fi

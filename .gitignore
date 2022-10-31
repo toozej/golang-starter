@@ -2,6 +2,9 @@
 golang-starter.key
 cosign.key
 
+# local secret environment variables
+.env
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

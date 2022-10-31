@@ -312,8 +312,8 @@ signs:
     output: true
     args:
       - 'sign-blob'
-      - '--key golang-starter.key'
-      - '--output-signature ${signature}'
+      - '--key=golang-starter.key'
+      - '--output-signature=${signature}'
       - '${artifact}'
     artifacts: all
 
@@ -324,7 +324,7 @@ docker_signs:
     output: true
     args:
       - 'sign'
-      - '--key golang-starter.key'
+      - '--key=golang-starter.key'
       - '${artifact}'
 
 milestones:
