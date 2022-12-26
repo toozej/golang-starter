@@ -143,15 +143,22 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	go install github.com/anchore/syft/cmd/syft@latest
 	# cosign
 	go install github.com/sigstore/cosign/cmd/cosign@latest
+	# go-licenses
+	go install github.com/google/go-licenses@latest
+	# go vuln check
+	go install golang.org/x/vuln/cmd/govulncheck@latest
 	# install and update pre-commits
 	pre-commit install
 	pre-commit autoupdate
 
 pre-commit-run: ## Run pre-commit hooks against all files
 	pre-commit run --all-files
-	# manually run the following checks since their pre-commits aren't working
+	# manually run the following checks since their pre-commits aren't working or don't exist
 	checkmake Makefile
 	goreleaser check
+	# re-enable once init merged to main
+	# go-licenses report github.com/toozej/golang-starter
+	govulncheck ./...
 
 docs: ## Generate and serve documentation
 	docker build -f $(CURDIR)/Dockerfile.docs -t toozej/golang-starter:docs . 
