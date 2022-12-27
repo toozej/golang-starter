@@ -26,10 +26,10 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 
-.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
 
 all: vet pre-commit clean test build verify run ## Run default workflow via Docker
-local: local-update-deps local-vendor local-vet pre-commit clean local-test local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
+local: local-update-deps local-vendor local-vet pre-commit clean local-test local-cover local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
 local-release-verify: local-release local-sign local-verify ## Release and verify using locally installed Golang toolchain
 pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 
@@ -38,6 +38,8 @@ vet: ## Run `go vet` in Docker
 
 test: ## Run `go test` in Docker
 	docker build --target test -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
+	@echo -e "\nStatements missing coverage"
+	@grep -v -e " 1$$" c.out
 
 build: ## Build Docker image, including running tests
 	docker build -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest .
@@ -76,6 +78,11 @@ local-vendor: ## Run `go mod vendor` using locally installed golang toolchain
 
 local-test: ## Run `go test` using locally installed golang toolchain
 	go test -coverprofile c.out -v $(CURDIR)/...
+	@echo -e "\nStatements missing coverage"
+	@grep -v -e " 1$$" c.out
+
+local-cover: ## View coverage report in web browser
+	go tool cover -html=c.out
 
 local-build: ## Run `go build` using locally installed golang toolchain
 	CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" $(CURDIR)/cmd/golang-starter/
