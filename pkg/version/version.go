@@ -24,12 +24,12 @@ type Info struct {
 }
 
 // Get creates an initialized Info object
-func Get() Info {
+func Get() (Info, error) {
 	return Info{
 		Commit:  Commit,
 		Version: Version,
 		BuiltAt: BuiltAt,
-	}
+	}, nil
 }
 
 // Command creates version command
@@ -39,7 +39,10 @@ func Command() *cobra.Command {
 		Short: "Print the version.",
 		Long:  `Print the version and build information.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			info := Get()
+			info, err := Get()
+			if err != nil {
+				return err
+			}
 			json, err := json.Marshal(info)
 			if err != nil {
 				return err
