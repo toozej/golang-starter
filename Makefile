@@ -25,8 +25,15 @@ LDFLAGS = -s -w \
 	-X $(VER).Branch=$(or $(BRANCH),unknown) \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
+	
+OS = $(shell uname -s)
+ifeq ($(OS), Linux)
+	OPENER=xdg-open
+else
+	OPENER=open
+endif
 
-.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs docs clean help
+.PHONY: all vet test build verify run deploy stop distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs docs docs-generate docs-serve clean help
 
 all: vet pre-commit clean test build verify run ## Run default workflow via Docker
 local: local-update-deps local-vendor local-vet pre-commit clean local-test local-cover local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
@@ -167,12 +174,17 @@ pre-commit-run: ## Run pre-commit hooks against all files
 	# go-licenses report github.com/toozej/golang-starter
 	govulncheck ./...
 
-docs: ## Generate and serve documentation
+docs: docs-generate docs-serve ## Generate and serve documentation
+
+docs-generate:
 	docker build -f $(CURDIR)/Dockerfile.docs -t toozej/golang-starter:docs . 
 	docker run --rm --name golang-starter-docs -v $(CURDIR):/package -v $(CURDIR)/docs:/docs toozej/golang-starter:docs
 
 docs-serve: ## Serve documentation on http://localhost:9000
-	docker run --rm --name golang-starter-docs-serve -p 9000:3080 -v $(CURDIR)/docs:/data thomsch98/markserv 
+	docker run -d --rm --name golang-starter-docs-serve -p 9000:3080 -v $(CURDIR)/docs:/data thomsch98/markserv
+	$(OPENER) http://localhost:9000/docs.md
+	@echo -e "to stop docs container, run:\n"
+	@echo "docker kill golang-starter-docs-serve"
 
 clean: ## Remove any locally compiled binaries
 	rm -f $(CURDIR)/golang-starter
