@@ -6,6 +6,7 @@ on:
     workflows: [security]
     types: [completed]
     branches: [main]
+    tags: ["*"]
 
 permissions:
   contents: write
