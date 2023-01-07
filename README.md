@@ -14,6 +14,22 @@ Golang starter template
 - pre-commit hooks for ensuring formatting, linting, security checks, etc.
 
 ## changes required to use this as a starter template
+- generate a GitHub fine-grained access token used in repo as "GITHUB_TOKEN" and in GitHub Actions Secrets as "GH_TOKEN" with the following read/write permissions
+    - actions
+    - code scanning alerts
+    - commit statuses
+    - contents
+    - dependabot alerts
+    - dependabot secrets
+    - deployments
+    - environments
+    - issues
+    - pages
+    - pull requests
+    - secret scanning alerts
+    - secrets
+    - webhooks
+    - workflows
 - ensure new repo has the following GitHub Actions Secrets and local shell exports/environment variables stored in `./.env`
     - GH_TOKEN
     - GH_GHCR_TOKEN
@@ -25,12 +41,14 @@ Golang starter template
     - COSIGN_PRIVATE_KEY
     - COSIGN_PASSWORD
 - find/replace golang-starter to new repo name
-    - run `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
+    - run `./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
     - to rename with a different GitHub username `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE $GITHUB_USERNAME_GOES_HERE`
+- generate cosign keypair
+    - `cosign generate-key-pair`
 - set built packages visibility in GitHub packages to public
     - navigate to https://github.com/users/$USERNAME/packages/container/$REPO/settings
     - scroll down to "Danger Zone"
     - change visibility to public
 
 ## changes required to update golang version
-- run `bash -c ./scripts/update_golang_version.sh $NEW_VERSION_GOES_HERE`
+- run `./scripts/update_golang_version.sh $NEW_VERSION_GOES_HERE`
