@@ -1,9 +1,18 @@
+# Cosign
+golang-starter.key
+cosign.key
+*.sig
+
+# local secret environment variables
+.env
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+golang-starter
 
 # Test binary, built with `go test -c`
 *.test
@@ -12,4 +21,10 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+
+# Generated directories
+completions/
+manpages/
+docs/
+dist/
