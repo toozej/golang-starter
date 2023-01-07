@@ -27,6 +27,10 @@ Golang starter template
 - find/replace golang-starter to new repo name
     - run `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
     - to rename with a different GitHub username `bash -c ./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE $GITHUB_USERNAME_GOES_HERE`
+- set built packages visibility in GitHub packages to public
+    - navigate to https://github.com/users/$USERNAME/packages/container/$REPO/settings
+    - scroll down to "Danger Zone"
+    - change visibility to public
 
 ## changes required to update golang version
 - run `bash -c ./scripts/update_golang_version.sh $NEW_VERSION_GOES_HERE`

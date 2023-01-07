@@ -170,8 +170,7 @@ pre-commit-run: ## Run pre-commit hooks against all files
 	# manually run the following checks since their pre-commits aren't working or don't exist
 	checkmake Makefile
 	goreleaser check
-	# re-enable once init merged to main
-	# go-licenses report github.com/toozej/golang-starter
+	go-licenses report github.com/toozej/golang-starter
 	govulncheck ./...
 
 docs: docs-generate docs-serve ## Generate and serve documentation
