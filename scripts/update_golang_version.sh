@@ -6,7 +6,7 @@ if ! command -v go; then
     exit 1
 fi
 
-OLD_GOLANG_VERSION="1.19"
+OLD_GOLANG_VERSION="1.20"
 NEW_GOLANG_VERSION="${1}"
 GIT_REPO_ROOT=$(git rev-parse --show-toplevel)
 FILES_NEEDING_UPDATES="${GIT_REPO_ROOT}/Dockerfile* ${GIT_REPO_ROOT}/README.md ${GIT_REPO_ROOT}/scripts/update_golang_version.sh ${GIT_REPO_ROOT}/.github/workflows/*"
@@ -16,7 +16,7 @@ cd "${GIT_REPO_ROOT}" || exit 1
 
 # shellcheck disable=SC2086
 go mod edit -go=${NEW_GOLANG_VERSION}
-go mod tidy
+#go mod tidy
 
 # rename from $OLD_GOLANG_VERSION to $NEW_GOLANG_VERSION
 # shellcheck disable=SC2116,SC2046
