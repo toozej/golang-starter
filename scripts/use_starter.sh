@@ -9,7 +9,7 @@ GIT_REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "${GIT_REPO_ROOT}"
 
 # truncate existing CREDITS.md file and replace its contents with link to template repo's CREDITS.md file
-echo -e "# Credits and Acknowledgements\n\n- https://raw.githubusercontent.com/toozej/dinnerclub/main/CREDITS.md" > CREDITS.md
+echo -e "# Credits and Acknowledgements\n\n- https://raw.githubusercontent.com/toozej/golang-starter/main/CREDITS.md" > CREDITS.md
 
 # remove golang-starter.pub key
 rm -f ./golang-starter.pub
