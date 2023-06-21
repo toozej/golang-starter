@@ -69,8 +69,7 @@ repos:
       - id: go-sec-mod
       - id: go-staticcheck-mod
       - id: go-critic
-      # TODO re-enable go-structslop-mod when hook is available in pre-commit-golang
-      #- id: go-structslop-mod
+      - id: go-structslop-mod
 
   # run shellcheck on Bash scripts
   - repo: https://github.com/koalaman/shellcheck-precommit
@@ -86,19 +85,17 @@ repos:
         args: ["--ignore", "DL3007"]
 
   # lint Makefile
-  # uncomment once https://github.com/mrtazz/checkmake/pull/69 merged
-  #- repo: https://github.com/mrtazz/checkmake/
-  #  rev: main
-  #  hooks:
-  #    - id: checkmake
-  #      files: Makefile
+  - repo: https://github.com/mrtazz/checkmake/
+    rev: 0.2.2
+    hooks:
+      - id: checkmake
+        files: Makefile
 
   # goreleaser config check
-  # uncomment when it works again, currently not reading .goreleaser.yml file
-  #- repo: https://github.com/trussworks/pre-commit-hooks
-  #  rev: v1.1.1
-  #  hooks:
-  #    - id: goreleaser-check
+  - repo: https://github.com/trussworks/pre-commit-hooks
+    rev: v1.1.1
+    hooks:
+      - id: goreleaser-check
 
   - repo: meta
     hooks:
