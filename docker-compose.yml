@@ -5,6 +5,9 @@ services:
     container_name: golang-starter
     image: toozej/golang-starter:latest
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
     labels:
       - "traefik.enable=false"
       # labels below for publishing as web service
