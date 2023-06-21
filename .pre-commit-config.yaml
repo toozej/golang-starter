@@ -47,7 +47,7 @@ repos:
 
   # format yaml
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-    rev: 0.2.2
+    rev: 0.2.3
     hooks:
       - id: yamlfmt
         args: [--mapping, "2", --sequence, "4", --offset, "2", --width, "88", --preserve-quotes]
