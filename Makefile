@@ -33,7 +33,7 @@ else
 	OPENER=open
 endif
 
-.PHONY: all vet test build verify run up down distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs docs docs-generate docs-serve clean help
+.PHONY: all vet test build verify run up down distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs update-golang-version docs docs-generate docs-serve clean help
 
 all: vet pre-commit clean test build verify run ## Run default workflow via Docker
 local: local-update-deps local-vendor local-vet pre-commit clean local-test local-cover local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
@@ -171,6 +171,11 @@ pre-commit-run: ## Run pre-commit hooks against all files
 	# manually run the following checks since their pre-commits aren't working or don't exist
 	go-licenses report github.com/toozej/golang-starter/cmd/golang-starter
 	govulncheck ./...
+
+update-golang-version: ## Update to latest Golang version across the repo
+	@VERSION=`curl -s "https://go.dev/dl/?mode=json" | jq -r '.[0].version' | sed 's/go//'`; \
+	echo "Updating Golang to $$VERSION"; \
+	./scripts/update_golang_version.sh $$VERSION
 
 docs: docs-generate docs-serve ## Generate and serve documentation
 
