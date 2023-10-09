@@ -1,4 +1,6 @@
 ---
+project_name: golang-starter
+
 env:
   - GO111MODULE=on
 
@@ -36,6 +38,7 @@ builds:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate
         }} -X main.builtBy=goreleaser
     main: ./cmd/golang-starter/
+    binary: golang-starter
 
 universal_binaries:
   - replace: false
@@ -169,6 +172,18 @@ docker_manifests:
     image_templates:
       - 'quay.io/toozej/golang-starter:{{ .Tag }}-amd64'
       - 'quay.io/toozej/golang-starter:{{ .Tag }}-arm64'
+  - name_template: 'toozej/golang-starter:{{ .Tag }}-distroless'
+    image_templates:
+      - 'toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+      - 'toozej/golang-starter:{{ .Tag }}-distroless-arm64'
+  - name_template: 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless'
+    image_templates:
+      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
+  - name_template: 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless'
+    image_templates:
+      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
   # latest
   - name_template: 'toozej/golang-starter:latest'
     image_templates:
@@ -182,6 +197,19 @@ docker_manifests:
     image_templates:
       - 'quay.io/toozej/golang-starter:{{ .Tag }}-amd64'
       - 'quay.io/toozej/golang-starter:{{ .Tag }}-arm64'
+  # distroless
+  - name_template: 'toozej/golang-starter:distroless'
+    image_templates:
+      - 'toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+      - 'toozej/golang-starter:{{ .Tag }}-distroless-arm64'
+  - name_template: 'ghcr.io/toozej/golang-starter:distroless'
+    image_templates:
+      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
+  - name_template: 'quay.io/toozej/golang-starter:distroless'
+    image_templates:
+      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
 
 archives:
   - name_template: >-
@@ -253,7 +281,8 @@ signs:
     output: true
     args:
       - 'sign-blob'
-      - '--key=golang-starter.key'
+      - '--key=env://COSIGN_PRIVATE_KEY'
+      - '--yes'
       - '--output-signature=${signature}'
       - '${artifact}'
     artifacts: all
@@ -265,7 +294,8 @@ docker_signs:
     output: true
     args:
       - 'sign'
-      - '--key=golang-starter.key'
+      - '--key=env://COSIGN_PRIVATE_KEY'
+      - '--yes'
       - '${artifact}'
 
 milestones:
