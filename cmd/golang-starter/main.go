@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/toozej/golang-starter/internal/math"
 	"github.com/toozej/golang-starter/pkg/config"
