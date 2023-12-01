@@ -92,10 +92,10 @@ local-cover: ## View coverage report in web browser
 	go tool cover -html=c.out
 
 local-build: ## Run `go build` using locally installed golang toolchain
-	CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" $(CURDIR)/cmd/golang-starter/
+	CGO_ENABLED=0 go build -o $(CURDIR)/out/ -ldflags="$(LDFLAGS)"
 
 local-run: ## Run locally built binary
-	$(CURDIR)/golang-starter
+	$(CURDIR)/out/golang-starter
 
 local-release-test: ## Build assets and test goreleaser config using locally installed golang toolchain and goreleaser
 	goreleaser check
@@ -110,17 +110,17 @@ local-release: local-test docker-login ## Release assets using locally installed
 
 local-sign: local-test ## Sign locally installed golang toolchain and cosign
 	if test -e $(CURDIR)/golang-starter.key && test -e $(CURDIR)/.env; then \
-		export `cat $(CURDIR)/.env | xargs` && cosign sign-blob --key=$(CURDIR)/golang-starter.key --output-signature=$(CURDIR)/golang-starter.sig $(CURDIR)/golang-starter; \
+		export `cat $(CURDIR)/.env | xargs` && cosign sign-blob --key=$(CURDIR)/golang-starter.key --output-signature=$(CURDIR)/golang-starter.sig $(CURDIR)/out/golang-starter; \
 	else \
 		echo "no cosign private key found at $(CURDIR)/golang-starter.key. Cannot release."; \
 	fi
 
 local-verify: get-cosign-pub-key ## Verify locally compiled binary
 	# cosign here assumes you're using Linux AMD64 binary
-	cosign verify-blob --key $(CURDIR)/golang-starter.pub --signature $(CURDIR)/golang-starter.sig $(CURDIR)/golang-starter
+	cosign verify-blob --key $(CURDIR)/golang-starter.pub --signature $(CURDIR)/golang-starter.sig $(CURDIR)/out/golang-starter
 
 install: local-build local-verify ## Install compiled binary to local machine
-	sudo cp $(CURDIR)/golang-starter /usr/local/bin/golang-starter
+	sudo cp $(CURDIR)/out/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
 
 docker-login: ## Login to Docker registries used to publish images to
@@ -190,7 +190,7 @@ docs-serve: ## Serve documentation on http://localhost:9000
 	@echo "docker kill golang-starter-docs-serve"
 
 clean: ## Remove any locally compiled binaries
-	rm -f $(CURDIR)/golang-starter
+	rm -f $(CURDIR)/out/golang-starter
 
 help: ## Display help text
 	@grep -E '^[a-zA-Z_-]+ ?:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

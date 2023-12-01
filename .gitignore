@@ -12,7 +12,7 @@ cosign.key
 *.dll
 *.so
 *.dylib
-golang-starter
+out/
 
 # Test binary, built with `go test -c`
 *.test
