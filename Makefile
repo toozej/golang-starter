@@ -18,7 +18,7 @@ BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
 # Linker flags
 PKG = $(shell head -n 1 go.mod | cut -c 8-)
-VER = $(PKG)/version
+VER = $(PKG)/pkg/version
 LDFLAGS = -s -w \
 	-X $(VER).Version=$(or $(VERSION),unknown) \
 	-X $(VER).Commit=$(or $(COMMIT),unknown) \
@@ -155,8 +155,7 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	# goreleaser
 	go install github.com/goreleaser/goreleaser@latest
 	# syft
-	# disabled until https://github.com/golang/go/issues/44840 is resolved or syft no longer uses replace directive in go.mod
-	# go install github.com/anchore/syft/cmd/syft@latest
+	command -v syft || curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 	# cosign
 	go install github.com/sigstore/cosign/cmd/cosign@latest
 	# go-licenses
