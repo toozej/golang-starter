@@ -44,9 +44,7 @@ vet: ## Run `go vet` in Docker
 	docker build --target vet -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
 
 test: ## Run `go test` in Docker
-	docker build --target test -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
-	@echo -e "\nStatements missing coverage"
-	@grep -v -e " 1$$" c.out
+	docker build --progress=plain --target test -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest . 
 
 build: ## Build Docker image, including running tests
 	docker build -f $(CURDIR)/Dockerfile -t toozej/golang-starter:latest .
@@ -122,6 +120,9 @@ local-verify: get-cosign-pub-key ## Verify locally compiled binary
 install: local-build local-verify ## Install compiled binary to local machine
 	sudo cp $(CURDIR)/out/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
+
+assert-secrets-gh: ## Assert secrets from .env to GitHub Actions Secrets
+	$(CURDIR)/scripts/upload_secrets_to_github.sh golang-starter 
 
 docker-login: ## Login to Docker registries used to publish images to
 	if test -e $(CURDIR)/.env; then \
