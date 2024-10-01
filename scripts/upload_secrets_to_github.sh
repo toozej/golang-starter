@@ -12,6 +12,9 @@ if [[ ! -f .env ]]; then
     handle_error ".env file not found. Ensure it exists before running this script."
 fi
 
+# Source .env file's environment variables
+#export "$(xargs < .env)"
+
 # Read GitHub username and token from the environment
 GITHUB_USERNAME="${GITHUB_USERNAME:-}"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
@@ -23,20 +26,8 @@ fi
 # Helper function to upload secrets to GitHub Actions
 upload_secrets_to_github() {
     echo "Pushing .env entries to GitHub Actions secrets for repo: $GITHUB_USERNAME/$REPO_NAME..."
-
-    while IFS='=' read -r key value; do
-        if [[ "$key" != "" ]]; then
-            response=$(curl -s -X PUT \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "{\"encrypted_value\":\"$value\",\"key_id\":\"$key\"}" \
-              "https://api.github.com/repos/$GITHUB_USERNAME/$REPO_NAME/actions/secrets/$key")
-
-            if [[ "$response" == *"errors"* ]]; then
-                handle_error "Failed to set secret $key in GitHub Actions. Response: $response"
-            fi
-        fi
-    done < .env
+    gh secret set --repo "$GITHUB_USERNAME"/"$REPO_NAME" --app actions --env-file .env
+    gh secret set COSIGN_PRIVATE_KEY --repo "$GITHUB_USERNAME"/"$REPO_NAME" --app actions < "$REPO_NAME.key"
     echo "Secrets successfully uploaded to GitHub Actions."
 }
 
