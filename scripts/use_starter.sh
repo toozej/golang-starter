@@ -164,7 +164,7 @@ go mod edit -module=github.com/${GITHUB_USERNAME}/${NEW_PROJECT_NAME} || handle_
 mv "cmd/${OLD_PROJECT_NAME}" "cmd/${NEW_PROJECT_NAME}" || handle_error "Failed to move project directories."
 
 # Replace old project name with the new project name across files
-grep --exclude-dir=.git -rl "${OLD_PROJECT_NAME}" . | xargs sed -i -e "s/${OLD_PROJECT_NAME}/${NEW_PROJECT_NAME}/g" || handle_error "Failed to rename instances of ${OLD_PROJECT_NAME} to ${NEW_PROJECT_NAME}."
+grep --exclude-dir=.git --exclude ./CREDITS.md -rl "${OLD_PROJECT_NAME}" . | xargs sed -i -e "s/${OLD_PROJECT_NAME}/${NEW_PROJECT_NAME}/g" || handle_error "Failed to rename instances of ${OLD_PROJECT_NAME} to ${NEW_PROJECT_NAME}."
 
 # Show git diff to allow verification of changes
 git diff || handle_error "Failed to show git diff."
