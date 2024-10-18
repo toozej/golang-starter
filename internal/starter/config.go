@@ -7,18 +7,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-var exit = os.Exit // Use a variable for os.Exit to allow overriding in tests
-
 // Get environment variables
-func getEnvVars() {
+func getEnvVars() error {
 	if _, err := os.Stat(".env"); err == nil {
 		// Initialize Viper from .env file
 		viper.SetConfigFile(".env") // Specify the name of your .env file
 
 		// Read the .env file
 		if err := viper.ReadInConfig(); err != nil {
-			fmt.Printf("Error reading .env file: %s\n", err)
-			exit(1)
+			return err
 		}
 	}
 
@@ -28,7 +25,8 @@ func getEnvVars() {
 	// get username from Viper
 	username = viper.GetString("USERNAME")
 	if username == "" {
-		fmt.Println("username must be provided")
-		exit(1)
+		return fmt.Errorf("username must be provided")
 	}
+
+	return nil
 }

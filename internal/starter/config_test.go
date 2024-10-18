@@ -7,61 +7,67 @@ import (
 	"github.com/spf13/viper"
 )
 
-// mockExit allows us to override os.Exit in tests.
-func mockExit(code int) {
-	panic("os.Exit called")
-}
-
-func TestGetEnvVars_Success(t *testing.T) {
-	// Setup environment variables for a successful run
-	os.Setenv("USERNAME", "testuser")
-
-	// Clear Viper config in case it is retaining state from previous tests
-	viper.Reset()
-
-	// Defer unsetting environment variables to avoid pollution
-	defer os.Unsetenv("USERNAME")
-
-	// Override the exit function to prevent the test from exiting
-	exit = mockExit
-	defer func() { exit = os.Exit }() // Reset after the test
-
-	// Call the function and check that it runs without exiting
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("Expected no panic, got %v", r)
-		}
-	}()
-
-	// Run the function
-	getEnvVars()
-
-	// Validate that the expected values were retrieved
-	if username != "testuser" {
-		t.Errorf("Expected username 'testuser', got '%s'", username)
+func TestGetEnvVars(t *testing.T) {
+	// Define test cases with different scenarios
+	tests := []struct {
+		name            string
+		envVars         map[string]string
+		expectError     bool
+		expectErrorText string
+	}{
+		{
+			name: "Valid environment variables",
+			envVars: map[string]string{
+				"USERNAME": "valid-username",
+			},
+			expectError: false,
+		},
+		{
+			name:            "Missing USERNAME",
+			envVars:         map[string]string{"OTHERTHING": "https://example.com"},
+			expectError:     true,
+			expectErrorText: "username must be provided",
+		},
+		{
+			name:            "No environment variables",
+			envVars:         map[string]string{},
+			expectError:     true,
+			expectErrorText: "username must be provided",
+		},
 	}
-}
 
-func TestGetEnvVars_MissingUsername(t *testing.T) {
-	// Setup environment variables with missing username
-	os.Unsetenv("USERNAME")
+	// Iterate through test cases
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Setup environment variables for the test
+			for key, value := range tt.envVars {
+				os.Setenv(key, value)
+			}
 
-	// Clear Viper config in case it is retaining state from previous tests
-	viper.Reset()
+			// Ensure Viper reads environment variables
+			viper.Reset()
+			viper.AutomaticEnv()
 
-	// Defer unsetting environment variables to avoid pollution
-	defer os.Unsetenv("USERNAME")
+			// Call the function and capture the error (if any)
+			err := getEnvVars()
 
-	// Override the exit function to prevent the test from exiting
-	exit = mockExit
-	defer func() { exit = os.Exit }() // Reset after the test
+			// Check for expected error outcomes
+			if tt.expectError {
+				if err == nil {
+					t.Errorf("Expected error but got none")
+				} else if err.Error() != tt.expectErrorText {
+					t.Errorf("Expected error message '%s' but got '%s'", tt.expectErrorText, err.Error())
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Expected panic due to missing USERNAME")
-		}
-	}()
-
-	// Run the function (expecting it to panic due to missing username)
-	getEnvVars()
+			// Clean up environment variables after the test
+			for key := range tt.envVars {
+				os.Unsetenv(key)
+			}
+		})
+	}
 }

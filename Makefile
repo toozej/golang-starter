@@ -56,7 +56,7 @@ verify: get-cosign-pub-key ## Verify Docker image with Cosign
 	cosign verify --key $(CURDIR)/golang-starter.pub toozej/golang-starter:latest
 
 run: ## Run built Docker image
-	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:latest
+	docker run --rm --name golang-starter --env-file $(CURDIR)/.env toozej/golang-starter:latest
 
 up: test build ## Run Docker Compose project with build Docker image
 	docker compose -f docker-compose.yml down --remove-orphans
@@ -78,7 +78,8 @@ local-update-deps: ## Run `go get -t -u ./...` to update Go module dependencies
 local-vet: ## Run `go vet` using locally installed golang toolchain
 	go vet $(CURDIR)/...
 
-local-vendor: ## Run `go mod vendor` using locally installed golang toolchain
+local-vendor: ## Run `go mod tidy & vendor` using locally installed golang toolchain
+	go mod tidy
 	go mod vendor
 
 local-test: ## Run `go test` using locally installed golang toolchain
@@ -93,7 +94,11 @@ local-build: ## Run `go build` using locally installed golang toolchain
 	CGO_ENABLED=0 go build -o $(CURDIR)/out/ -ldflags="$(LDFLAGS)"
 
 local-run: ## Run locally built binary
-	$(CURDIR)/out/golang-starter
+	if test -e $(CURDIR)/.env; then \
+		export `cat $(CURDIR)/.env | xargs` && $(CURDIR)/out/golang-starter; \
+	else \
+		echo "No environment variables found at $(CURDIR)/.env. Cannot run."; \
+	fi
 
 local-release-test: ## Build assets and test goreleaser config using locally installed golang toolchain and goreleaser
 	goreleaser check
