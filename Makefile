@@ -33,7 +33,7 @@ else
 	OPENER=open
 endif
 
-.PHONY: all vet test build verify run up down distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs update-golang-version docs docs-generate docs-serve clean help
+.PHONY: all vet test build verify run up down distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs update-golang-version upload-secrets-to-gh upload-secrets-envfile-to-1pass docs docs-generate docs-serve clean help
 
 all: vet pre-commit clean test build verify run ## Run default workflow via Docker
 local: local-update-deps local-vendor local-vet pre-commit clean local-test local-cover local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
@@ -126,8 +126,12 @@ install: local-build local-verify ## Install compiled binary to local machine
 	sudo cp $(CURDIR)/out/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
 
-assert-secrets-gh: ## Assert secrets from .env to GitHub Actions Secrets
+upload-secrets-to-gh: ## Upload secrets from .env file to GitHub Actions Secrets + Dependabot
 	$(CURDIR)/scripts/upload_secrets_to_github.sh golang-starter 
+
+upload-secrets-envfile-to-1pass: ## Upload secrets and .env file to 1Password
+	$(CURDIR)/scripts/upload_secrets_to_1password secrets golang-starter
+	$(CURDIR)/scripts/upload_secrets_to_1password envfile golang-starter
 
 docker-login: ## Login to Docker registries used to publish images to
 	if test -e $(CURDIR)/.env; then \
