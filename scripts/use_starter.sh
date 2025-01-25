@@ -91,6 +91,7 @@ generate_cosign_keys() {
 
     # Export passphrase for cosign to use
     export COSIGN_PASSWORD=${COSIGN_PASSPHRASE}
+    export COSIGN_PASSPHRASE=${COSIGN_PASSPHRASE}
 
     # Generate key-pair
     cosign generate-key-pair || handle_error "Cosign key generation failed."
