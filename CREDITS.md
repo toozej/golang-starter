@@ -14,6 +14,9 @@ Below is a list of various projects and code-snippets used in this golang-starte
 - <https://stackoverflow.com/a/60675491>
 - <https://golang.cafe/blog/how-to-upgrade-golang-dependencies.html>
 
+## Devcontainers
+- <https://github.com/qdm12/godevcontainer/blob/master/.devcontainer/devcontainer.json>
+
 ## SBOM and Signing
 - <https://carlosbecker.com/posts/goreleaser-cosign/>
 - <https://goreleaser.com/customization/sign/>

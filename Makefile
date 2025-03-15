@@ -33,10 +33,10 @@ else
 	OPENER=open
 endif
 
-.PHONY: all vet test build verify run up down distroless-build distroless-run local local-vet local-test local-cover local-run local-release-test local-release local-sign local-verify local-release-verify install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs update-golang-version upload-secrets-to-gh upload-secrets-envfile-to-1pass docs docs-generate docs-serve clean help
+.PHONY: all vet test build verify run up down distroless-build distroless-run install local local-vet local-test local-cover local-run local-kill local-iterate local-release-test local-release local-sign local-verify local-release-verify local-install get-cosign-pub-key docker-login pre-commit-install pre-commit-run pre-commit pre-reqs update-golang-version upload-secrets-to-gh upload-secrets-envfile-to-1pass docs docs-generate docs-serve clean help
 
 all: vet pre-commit clean test build verify run ## Run default workflow via Docker
-local: local-update-deps local-vendor local-vet pre-commit clean local-test local-cover local-build local-sign local-verify local-run ## Run default workflow using locally installed Golang toolchain
+local: local-update-deps local-vendor local-vet pre-commit clean local-test local-cover local-build local-sign local-verify local-kill local-run ## Run default workflow using locally installed Golang toolchain
 local-release-verify: local-release local-sign local-verify ## Release and verify using locally installed Golang toolchain
 pre-reqs: pre-commit-install ## Install pre-commit hooks and necessary binaries
 
@@ -72,6 +72,19 @@ distroless-build: ## Build Docker image using distroless as final base
 distroless-run: ## Run built Docker image using distroless as final base
 	docker run --rm --name golang-starter -v $(CURDIR)/config:/config toozej/golang-starter:distroless
 
+install: ## Install golang-starter from latest GitHub release
+	if command -v go; then \
+			go install github.com/toozej/golang-starter@latest ; \
+	else \
+			echo "Downloading golang-starter binary for $(OS)-$(ARCH)..."; \
+			mkdir -p $(CURDIR)/tmp; \
+			curl --silent -L -o $(CURDIR)/tmp/golang-starter.tgz $(LATEST_RELEASE_URL); \
+			tar -xzf $(CURDIR)/tmp/golang-starter.tgz -C $(CURDIR)/tmp/; \
+			chmod +x $(CURDIR)/tmp/golang-starter; \
+			sudo mv $(CURDIR)/tmp/golang-starter /usr/local/bin/golang-starter; \
+			rm -rf $(CURDIR)/tmp; \
+	fi
+
 local-update-deps: ## Run `go get -t -u ./...` to update Go module dependencies
 	go get -t -u ./...
 
@@ -100,6 +113,12 @@ local-run: ## Run locally built binary
 		echo "No environment variables found at $(CURDIR)/.env. Cannot run."; \
 	fi
 
+local-kill: ## Kill any currently running locally built binary
+	-pkill -f '$(CURDIR)/out/golang-starter'
+
+local-iterate: ## Run `make local-build local-run` via `air` any time a .go or .tmpl file changes
+	air -c $(CURDIR)/.air.toml
+
 local-release-test: ## Build assets and test goreleaser config using locally installed golang toolchain and goreleaser
 	goreleaser check
 	goreleaser build --rm-dist --snapshot
@@ -122,7 +141,7 @@ local-verify: get-cosign-pub-key ## Verify locally compiled binary
 	# cosign here assumes you're using Linux AMD64 binary
 	cosign verify-blob --key $(CURDIR)/golang-starter.pub --signature $(CURDIR)/golang-starter.sig $(CURDIR)/out/golang-starter
 
-install: local-build local-verify ## Install compiled binary to local machine
+local-install: local-build local-verify ## Install compiled binary to local machine
 	sudo cp $(CURDIR)/out/golang-starter /usr/local/bin/golang-starter
 	sudo chmod 0755 /usr/local/bin/golang-starter
 
@@ -146,6 +165,7 @@ docker-login: ## Login to Docker registries used to publish images to
 pre-commit: pre-commit-install pre-commit-run ## Install and run pre-commit hooks
 
 pre-commit-install: ## Install pre-commit hooks and necessary binaries
+	command -v apt && apt-get update || echo "package manager not apt"
 	# golangci-lint
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	# goimports
@@ -159,7 +179,7 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	# structslop
 	# go install github.com/orijtech/structslop/cmd/structslop@latest
 	# shellcheck
-	command -v shellcheck || sudo dnf install -y ShellCheck || sudo apt install -y shellcheck
+	command -v shellcheck || brew install shellcheck || apt install -y shellcheck || sudo dnf install -y ShellCheck || sudo apt install -y shellcheck
 	# checkmake
 	go install github.com/mrtazz/checkmake/cmd/checkmake@latest
 	# goreleaser
@@ -172,7 +192,12 @@ pre-commit-install: ## Install pre-commit hooks and necessary binaries
 	go install github.com/google/go-licenses@latest
 	# go vuln check
 	go install golang.org/x/vuln/cmd/govulncheck@latest
+	# air
+	go install github.com/air-verse/air@latest
 	# install and update pre-commits
+	# determine if on Debian 12 and if so use pip to install more modern pre-commit version
+	grep --silent "VERSION=\"12 (bookworm)\"" /etc/os-release && apt install -y --no-install-recommends python3-pip && python3 -m pip install --break-system-packages --upgrade pre-commit || echo "OS is not Debian 12 bookworm"
+	command -v pre-commit || brew install pre-commit || sudo dnf install -y pre-commit || sudo apt install -y pre-commit
 	pre-commit install
 	pre-commit autoupdate
 
