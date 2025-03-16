@@ -144,6 +144,10 @@ mv "cmd/${OLD_PROJECT_NAME}" "cmd/${NEW_PROJECT_NAME}" || handle_error "Failed t
 # Replace old project name with the new project name across files
 grep --exclude-dir=.git --exclude ./CREDITS.md -rl "${OLD_PROJECT_NAME}" . | xargs sed -i -e "s/${OLD_PROJECT_NAME}/${NEW_PROJECT_NAME}/g" || handle_error "Failed to rename instances of ${OLD_PROJECT_NAME} to ${NEW_PROJECT_NAME}."
 
+# Randomize minute for CI/CD GitHub Actions pipeline executes on Sunday evenings
+RAND_MIN=$((RANDOM % 60))
+sed -i "s/0 1 \* \* 1/${RAND_MIN} 1 * * 1/" .github/workflows/cicd.yaml
+
 # Show git diff to allow verification of changes
 git diff || handle_error "Failed to show git diff."
 
@@ -168,5 +172,8 @@ generate_cosign_keys
 
 # Call the external secrets upload script
 ./scripts/upload_secrets_to_github.sh "${NEW_PROJECT_NAME}"
+
+# Setup necessary GitHub repo labels
+gh label create dependencies --description "Dependencies" --repo "${GITHUB_USERNAME}/${NEW_PROJECT_NAME}"
 
 echo "Project initialization complete! You can now verify and commit the changes."
