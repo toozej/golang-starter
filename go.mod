@@ -2,7 +2,7 @@ module github.com/toozej/golang-starter
 
 go 1.24
 
-require github.com/spf13/viper v1.20.0
+require github.com/spf13/viper v1.20.1
 
 require (
 	github.com/muesli/mango-cobra v1.2.0
@@ -20,7 +20,7 @@ require (
 	github.com/muesli/mango v0.2.0 // indirect
 	github.com/muesli/mango-pflag v0.1.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
-	github.com/sagikazarmark/locafero v0.8.0 // indirect
+	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
