@@ -28,3 +28,7 @@ completions/
 manpages/
 docs/
 dist/
+
+# Temporary files
+prompt.txt
+prompt.md
