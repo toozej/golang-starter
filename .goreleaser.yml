@@ -274,6 +274,25 @@ nfpms:
         - statically-linked-binary
         - changelog-file-missing-in-native-package
 
+brews:
+  - name: golang-starter
+    homepage: https://github.com/toozej/golang-starter
+    description: "Golang starter template"
+    license: GPLv3
+    repository:
+      owner: toozej
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    directory: Formula
+    install: |
+      bin.install "golang-starter"
+      bash_completion.install "completions/golang-starter.bash" => "golang-starter"
+      fish_completion.install "completions/golang-starter.fish"
+      zsh_completion.install "completions/golang-starter.zsh" => "_golang-starter"
+      man1.install "manpages/golang-starter.1.gz"
+    test: |
+      system "#{bin}/golang-starter version"
+
 sboms:
   - artifacts: archive
 

@@ -2,15 +2,11 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
-
-	"github.com/spf13/afero"
-	"github.com/spf13/viper"
 )
 
 func TestGetEnvVars(t *testing.T) {
-	fs := afero.NewMemMapFs()
-
 	tests := []struct {
 		name           string
 		mockEnv        map[string]string
@@ -24,11 +20,11 @@ func TestGetEnvVars(t *testing.T) {
 				"USERNAME": "testuser",
 			},
 			expectError:    false,
-			expectUsername: "",
+			expectUsername: "testuser",
 		},
 		{
 			name:           "Valid .env file",
-			mockEnvFile:    "username=testenvfileuser\n",
+			mockEnvFile:    "USERNAME=testenvfileuser\n",
 			expectError:    false,
 			expectUsername: "testenvfileuser",
 		},
@@ -37,29 +33,59 @@ func TestGetEnvVars(t *testing.T) {
 			expectError:    false,
 			expectUsername: "",
 		},
+		{
+			name: "Environment variable overrides .env file",
+			mockEnv: map[string]string{
+				"USERNAME": "envuser",
+			},
+			mockEnvFile:    "USERNAME=fileuser\n",
+			expectError:    false,
+			expectUsername: "envuser",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Reset Viper settings before each test
-			viper.Reset()
-
-			// Mock environment variables
-			for key, value := range tt.mockEnv {
-				os.Setenv(key, value)
-				defer os.Unsetenv(key)
+			// Save original directory and change to temp directory
+			originalDir, err := os.Getwd()
+			if err != nil {
+				t.Fatalf("Failed to get current directory: %v", err)
 			}
 
-			// Mock .env file if applicable
+			// Save original USERNAME environment variable
+			originalUsername := os.Getenv("USERNAME")
+			defer func() {
+				if originalUsername != "" {
+					os.Setenv("USERNAME", originalUsername)
+				} else {
+					os.Unsetenv("USERNAME")
+				}
+			}()
+
+			tmpDir := t.TempDir()
+			if err := os.Chdir(tmpDir); err != nil {
+				t.Fatalf("Failed to change to temp directory: %v", err)
+			}
+			defer func() {
+				if err := os.Chdir(originalDir); err != nil {
+					t.Errorf("Failed to restore original directory: %v", err)
+				}
+			}()
+
+			// Clear USERNAME environment variable first
+			os.Unsetenv("USERNAME")
+
+			// Create .env file if applicable
 			if tt.mockEnvFile != "" {
-				if err := afero.WriteFile(fs, ".env", []byte(tt.mockEnvFile), 0644); err != nil {
+				envPath := filepath.Join(tmpDir, ".env")
+				if err := os.WriteFile(envPath, []byte(tt.mockEnvFile), 0644); err != nil {
 					t.Fatalf("Failed to write mock .env file: %v", err)
 				}
-				viper.SetFs(fs) // Ensure Viper uses the mocked filesystem
-				viper.SetConfigFile(".env")
-				if err := viper.ReadInConfig(); err != nil {
-					t.Fatalf("failed to read mock .env file: %v", err)
-				}
+			}
+
+			// Set mock environment variables (these should override .env file)
+			for key, value := range tt.mockEnv {
+				os.Setenv(key, value)
 			}
 
 			// Call function
