@@ -26,7 +26,14 @@ LDFLAGS = -s -w \
 	-X $(VER).BuiltAt=$(NOW) \
 	-X $(VER).Builder=$(BUILDER)
 	
-OS = $(shell uname -s)
+# Define the repository URL
+REPO_URL := https://github.com/toozej/golang-starter
+
+# Detect the OS and architecture
+OS := $(shell uname -s)
+ARCH := $(shell uname -m)
+LATEST_RELEASE_URL := $(REPO_URL)/releases/latest/download/golang-starter_$(OS)_$(ARCH).tar.gz
+
 ifeq ($(OS), Linux)
 	OPENER=xdg-open
 else
