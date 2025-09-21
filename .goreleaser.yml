@@ -33,6 +33,9 @@ builds:
       - arm64
     goarm:
       - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
     mod_timestamp: '{{ .CommitTimestamp }}'
     flags:
       - -trimpath
@@ -76,142 +79,83 @@ changelog:
     - title: Other work
       order: 9999
 
-dockers:
-  - image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-amd64'
+dockers_v2:
+  - id: golang-starter
+    images:
+      - 'toozej/golang-starter'
+      - 'ghcr.io/toozej/golang-starter'
+      - 'quay.io/toozej/golang-starter'
+    tags:
+      - "v{{ .Version }}"
+      - "{{ .Version }}"
+      - "latest"
     dockerfile: Dockerfile.goreleaser
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
-      - "--label=io.artifacthub.package.maintainers=[{\"name\":\"toozej\"}]"
-      - "--label=io.artifacthub.package.license=GPLv3"
-      - "--label=org.opencontainers.image.description=Golang starter template"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.name={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source={{.GitURL}}"
-      - "--platform=linux/amd64"
+    labels:
+      "io.artifacthub.package.readme-url": "https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
+      "io.artifacthub.package.maintainers": "[{\"name\":\"toozej\"}]"
+      "io.artifacthub.package.license": "GPLv3"
+      "org.opencontainers.image.description": "Golang starter template"
+      "org.opencontainers.image.created": "{{.Date}}"
+      "org.opencontainers.image.name": "{{.ProjectName}}"
+      "org.opencontainers.image.revision": "{{.FullCommit}}"
+      "org.opencontainers.image.version": "{{.Version}}"
+      "org.opencontainers.image.source": "{{.GitURL}}"
+      "org.opencontainers.image.authors": "James Tooze https://github.com/toozej/"
+      "org.opencontainers.image.documentation": "https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
+      "org.opencontainers.image.licenses": "GPL-3.0-only"
+      "org.opencontainers.image.title": "{{.ProjectName}}"
+      "org.opencontainers.image.vendor": "James Tooze"
+    annotations:
+      "index,manifest:org.opencontainers.image.authors": "James Tooze https://github.com/toozej/"
+      "index,manifest:org.opencontainers.image.created": "{{.Date}}"
+      "index,manifest:org.opencontainers.image.description": "Golang starter template"
+      "index,manifest:org.opencontainers.image.documentation": "https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
+      "index,manifest:org.opencontainers.image.licenses": "GPL-3.0-only"
+      "index,manifest:org.opencontainers.image.revision": "{{.FullCommit}}"
+      "index,manifest:org.opencontainers.image.source": "https://github.com/toozej/golang-starter"
+      "index,manifest:org.opencontainers.image.title": "{{.ProjectName}}"
+      "index,manifest:org.opencontainers.image.vendor": "James Tooze"
+      "index,manifest:org.opencontainers.image.version": "{{.Version}}"
     extra_files:
       - scripts/goreleaser_entrypoint.sh
-  - image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-arm64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-arm64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-arm64'
-    dockerfile: Dockerfile.goreleaser
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
-      - "--label=io.artifacthub.package.maintainers=[{\"name\":\"toozej\"}]"
-      - "--label=io.artifacthub.package.license=GPLv3"
-      - "--label=org.opencontainers.image.description=Golang starter template"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.name={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source={{.GitURL}}"
-      - "--platform=linux/arm64"
-    goarch: arm64
-    extra_files:
-      - scripts/goreleaser_entrypoint.sh
-  - image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
+  - id: golang-starter-distroless
+    images:
+      - 'toozej/golang-starter'
+      - 'ghcr.io/toozej/golang-starter'
+      - 'quay.io/toozej/golang-starter'
+    tags:
+      - "v{{ .Version }}-distroless"
+      - "{{ .Version }}-distroless"
+      - "distroless"
     dockerfile: Dockerfile.goreleaser.distroless
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
-      - "--label=io.artifacthub.package.maintainers=[{\"name\":\"toozej\"}]"
-      - "--label=io.artifacthub.package.license=GPLv3"
-      - "--label=org.opencontainers.image.description=Golang starter template"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.name={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source={{.GitURL}}"
-      - "--platform=linux/amd64"
+    labels:
+      "io.artifacthub.package.readme-url": "https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
+      "io.artifacthub.package.maintainers": "[{\"name\":\"toozej\"}]"
+      "io.artifacthub.package.license": "GPLv3"
+      "org.opencontainers.image.description": "Golang starter template"
+      "org.opencontainers.image.created": "{{.Date}}"
+      "org.opencontainers.image.name": "{{.ProjectName}}"
+      "org.opencontainers.image.revision": "{{.FullCommit}}"
+      "org.opencontainers.image.version": "{{.Version}}"
+      "org.opencontainers.image.source": "{{.GitURL}}"
+      "org.opencontainers.image.authors": "James Tooze https://github.com/toozej/"
+      "org.opencontainers.image.documentation": "https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
+      "org.opencontainers.image.licenses": "GPL-3.0-only"
+      "org.opencontainers.image.title": "{{.ProjectName}}"
+      "org.opencontainers.image.vendor": "James Tooze"
+    annotations:
+      "index,manifest:org.opencontainers.image.authors": "James Tooze https://github.com/toozej/"
+      "index,manifest:org.opencontainers.image.created": "{{.Date}}"
+      "index,manifest:org.opencontainers.image.description": "Golang starter template"
+      "index,manifest:org.opencontainers.image.documentation": "https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
+      "index,manifest:org.opencontainers.image.licenses": "GPL-3.0-only"
+      "index,manifest:org.opencontainers.image.revision": "{{.FullCommit}}"
+      "index,manifest:org.opencontainers.image.source": "https://github.com/toozej/golang-starter"
+      "index,manifest:org.opencontainers.image.title": "{{.ProjectName}}"
+      "index,manifest:org.opencontainers.image.vendor": "James Tooze"
+      "index,manifest:org.opencontainers.image.version": "{{.Version}}"
     extra_files:
       - scripts/goreleaser_entrypoint.sh
-  - image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-    dockerfile: Dockerfile.goreleaser.distroless
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/toozej/golang-starter/main/README.md"
-      - "--label=io.artifacthub.package.maintainers=[{\"name\":\"toozej\"}]"
-      - "--label=io.artifacthub.package.license=GPLv3"
-      - "--label=org.opencontainers.image.description=Golang starter template"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.name={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source={{.GitURL}}"
-      - "--platform=linux/arm64"
-    goarch: arm64
-    extra_files:
-      - scripts/goreleaser_entrypoint.sh
-
-docker_manifests:
-  # tagged
-  - name_template: 'toozej/golang-starter:{{ .Tag }}'
-    image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'toozej/golang-starter:{{ .Tag }}-arm64'
-  - name_template: 'ghcr.io/toozej/golang-starter:{{ .Tag }}'
-    image_templates:
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-arm64'
-  - name_template: 'quay.io/toozej/golang-starter:{{ .Tag }}'
-    image_templates:
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-arm64'
-  - name_template: 'toozej/golang-starter:{{ .Tag }}-distroless'
-    image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-  - name_template: 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless'
-    image_templates:
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-  - name_template: 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless'
-    image_templates:
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-  # latest
-  - name_template: 'toozej/golang-starter:latest'
-    image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'toozej/golang-starter:{{ .Tag }}-arm64'
-  - name_template: 'ghcr.io/toozej/golang-starter:latest'
-    image_templates:
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-arm64'
-  - name_template: 'quay.io/toozej/golang-starter:latest'
-    image_templates:
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-amd64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-arm64'
-  # distroless
-  - name_template: 'toozej/golang-starter:distroless'
-    image_templates:
-      - 'toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-  - name_template: 'ghcr.io/toozej/golang-starter:distroless'
-    image_templates:
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'ghcr.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
-  - name_template: 'quay.io/toozej/golang-starter:distroless'
-    image_templates:
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-amd64'
-      - 'quay.io/toozej/golang-starter:{{ .Tag }}-distroless-arm64'
 
 archives:
   - name_template: >-
@@ -274,7 +218,7 @@ nfpms:
         - statically-linked-binary
         - changelog-file-missing-in-native-package
 
-brews:
+homebrew_casks:
   - name: golang-starter
     homepage: https://github.com/toozej/golang-starter
     description: "Golang starter template"
@@ -283,15 +227,20 @@ brews:
       owner: toozej
       name: homebrew-tap
       token: "{{ .Env.GITHUB_TOKEN }}"
-    directory: Formula
-    install: |
-      bin.install "golang-starter"
-      bash_completion.install "completions/golang-starter.bash" => "golang-starter"
-      fish_completion.install "completions/golang-starter.fish"
-      zsh_completion.install "completions/golang-starter.zsh" => "_golang-starter"
-      man1.install "manpages/golang-starter.1.gz"
-    test: |
-      system "#{bin}/golang-starter version"
+    manpages:
+      - "man/golang-starter.1.gz"
+    completions:
+      bash: "completions/golang-starter.bash"
+      zsh: "completions/golang-starter.zsh"
+      fish: "completions/golang-starter.fish"
+    url:
+      verified: "github.com/toozej/golang-starter/releases/download"
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/golang-starter"]
+          end
 
 sboms:
   - artifacts: archive
