@@ -226,7 +226,7 @@ homebrew_casks:
     repository:
       owner: toozej
       name: homebrew-tap
-      token: "{{ .Env.GITHUB_TOKEN }}"
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
     manpages:
       - "man/golang-starter.1.gz"
     completions:
