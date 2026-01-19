@@ -228,7 +228,7 @@ homebrew_casks:
       name: homebrew-tap
       token: "{{ .Env.TAP_GITHUB_TOKEN }}"
     manpages:
-      - "man/golang-starter.1.gz"
+      - "manpages/golang-starter.1.gz"
     completions:
       bash: "completions/golang-starter.bash"
       zsh: "completions/golang-starter.zsh"
