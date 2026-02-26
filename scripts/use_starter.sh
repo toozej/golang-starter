@@ -176,6 +176,6 @@ generate_cosign_keys
 ./scripts/upload_secrets_to_github.sh "${NEW_PROJECT_NAME}"
 
 # Setup necessary GitHub repo labels
-gh label create dependencies --description "Dependencies" --repo "${GITHUB_USERNAME}/${NEW_PROJECT_NAME}"
+for ecosystem in gomod github-actions docker devcontainers; do gh label create ${ecosystem} --description "${ecosystem}" --repo "${GITHUB_USERNAME}/${NEW_PROJECT_NAME}"; done
 
 echo "Project initialization complete! You can now verify and commit the changes."
