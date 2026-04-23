@@ -2,7 +2,9 @@
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/toozej/golang-starter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/toozej/golang-starter)](https://goreportcard.com/report/github.com/toozej/golang-starter)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/toozej/golang-starter/cicd.yaml)
+![GitHub Actions CI Workflow Status](https://img.shields.io/github/actions/workflow/status/toozej/golang-starter/ci.yaml)
+![GitHub Actions Release Workflow Status](https://img.shields.io/github/actions/workflow/status/toozej/golang-starter/release.yaml)
+![GitHub Actions Weekly Docker Refresh Workflow Status](https://img.shields.io/github/actions/workflow/status/toozej/golang-starter/weekly-docker-refresh.yaml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/toozej/golang-starter)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/toozej/golang-starter/total)
 
