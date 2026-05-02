@@ -27,7 +27,7 @@ func TestRun(t *testing.T) {
 
 			Run(tt.input)
 
-			w.Close()
+			_ = w.Close()
 			var out bytes.Buffer
 			_, _ = out.ReadFrom(r)
 

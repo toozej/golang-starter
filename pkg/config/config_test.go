@@ -56,9 +56,9 @@ func TestGetEnvVars(t *testing.T) {
 			originalUsername := os.Getenv("USERNAME")
 			defer func() {
 				if originalUsername != "" {
-					os.Setenv("USERNAME", originalUsername)
+					_ = os.Setenv("USERNAME", originalUsername)
 				} else {
-					os.Unsetenv("USERNAME")
+					_ = os.Unsetenv("USERNAME")
 				}
 			}()
 
@@ -73,7 +73,7 @@ func TestGetEnvVars(t *testing.T) {
 			}()
 
 			// Clear USERNAME environment variable first
-			os.Unsetenv("USERNAME")
+			_ = os.Unsetenv("USERNAME")
 
 			// Create .env file if applicable
 			if tt.mockEnvFile != "" {
@@ -85,7 +85,7 @@ func TestGetEnvVars(t *testing.T) {
 
 			// Set mock environment variables (these should override .env file)
 			for key, value := range tt.mockEnv {
-				os.Setenv(key, value)
+				_ = os.Setenv(key, value)
 			}
 
 			// Call function

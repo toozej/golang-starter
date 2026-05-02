@@ -21,7 +21,7 @@ func BenchmarkRun(b *testing.B) {
 		Run(username)
 	}
 
-	w.Close()
+	_ = w.Close()
 	var out bytes.Buffer
 	_, _ = out.ReadFrom(r)
 }
@@ -39,7 +39,7 @@ func BenchmarkRunWithEmptyString(b *testing.B) {
 		Run("")
 	}
 
-	w.Close()
+	_ = w.Close()
 	var out bytes.Buffer
 	_, _ = out.ReadFrom(r)
 }
