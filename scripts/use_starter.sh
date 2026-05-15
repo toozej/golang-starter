@@ -146,6 +146,11 @@ mv "cmd/${OLD_PROJECT_NAME}" "cmd/${NEW_PROJECT_NAME}" || handle_error "Failed t
 # Replace old project name with the new project name across files
 grep --exclude-dir=.git --exclude ./CREDITS.md -rl "${OLD_PROJECT_NAME}" . | xargs sed -i -e "s/${OLD_PROJECT_NAME}/${NEW_PROJECT_NAME}/g" || handle_error "Failed to rename instances of ${OLD_PROJECT_NAME} to ${NEW_PROJECT_NAME}."
 
+# Replace old GitHub username with the new GitHub username across files (for ldflags paths, import paths, etc.)
+if [[ "${GITHUB_USERNAME}" != "toozej" ]]; then
+  grep --exclude-dir=.git --exclude ./CREDITS.md -rl "toozej" . | xargs sed -i -e "s/toozej/${GITHUB_USERNAME}/g" || handle_error "Failed to rename instances of toozej to ${GITHUB_USERNAME}."
+fi
+
 # Randomize minute for CI/CD GitHub Actions pipeline executes on Sunday evenings
 RAND_MIN=$((RANDOM % 60))
 sed -i "s/0 1 \* \* 1/${RAND_MIN} 1 * * 1/" .github/workflows/ci.yaml
@@ -177,6 +182,6 @@ generate_cosign_keys
 ./scripts/upload_secrets_to_github.sh "${NEW_PROJECT_NAME}"
 
 # Setup necessary GitHub repo labels
-for ecosystem in gomod github-actions docker devcontainers; do gh label create ${ecosystem} --description "${ecosystem}" --repo "${GITHUB_USERNAME}/${NEW_PROJECT_NAME}"; done
+for ecosystem in dependencies gomod github-actions docker devcontainers; do gh label create ${ecosystem} --description "${ecosystem}" --repo "${GITHUB_USERNAME}/${NEW_PROJECT_NAME}"; done
 
 echo "Project initialization complete! You can now verify and commit the changes."
