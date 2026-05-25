@@ -45,10 +45,20 @@ Golang starter template
 - run `use_starter.sh` script to rename project files, generate Cosign artifacts, gather and upload secrets to GitHub Actions, etc.
     - run `./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE`
     - to rename with a different GitHub username `./scripts/use_starter.sh $NEW_PROJECT_NAME_GOES_HERE $GITHUB_USERNAME_GOES_HERE`
-- set up new repository in quay.io web console
+- set up new repository in quay.io
     - (DockerHub and GitHub Container Registry do this automatically on first push/publish)
-    - name must match Git repo name
-    - grant robot user with username stored in QUAY_USERNAME "write" permissions (your quay.io account should already have admin permissions)
+    - `use_starter.sh` automates Quay.io repo creation and robot permissions via `scripts/create_quay_repo.sh`
+    - this requires a Quay.io **OAuth 2.0 Access Token** (stored as `QUAY_OAUTH_TOKEN` in `.env` / GitHub Actions Secrets):
+        1. Log in to [quay.io](https://quay.io) and navigate to your **Account Settings** (or **Organization Settings** for org-owned repos)
+        2. Click **Applications** in the left sidebar
+        3. Click **Create New Application** and give it a name (e.g. `repo-automation`)
+        4. Click the newly created application, then click **Generate Token** in the left sidebar
+        5. Select the following permission scopes:
+            - `Create Repositories` (`repo:create`)
+            - `Administer Repositories` (`repo:admin`)
+        6. Click **Generate Access Token**, copy the token, and save it as `QUAY_OAUTH_TOKEN` in your `.env` file
+        - **Note:** `QUAY_OAUTH_TOKEN` is distinct from `QUAY_TOKEN` (the robot account password used by Docker login). The OAuth token is a user/org-level token needed for API operations; the robot token is used for image push/pull auth.
+        - **Note:** Robot account usernames follow the format `namespace+robotname` (e.g. `toozej+github_builder`). If your `QUAY_USERNAME` is in this format, `create_quay_repo.sh` will automatically extract the namespace and robot name.
 - set built packages visibility in GitHub packages to public
     - navigate to https://github.com/users/$USERNAME/packages/container/$REPO/settings
     - scroll down to "Danger Zone"

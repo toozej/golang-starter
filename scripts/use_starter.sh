@@ -178,6 +178,12 @@ generate_cosign_keys
 # Store EnvFile in 1Password
 ./scripts/upload_secrets_to_1password.sh envfile "${NEW_PROJECT_NAME}"
 
+# Create Quay.io repository and configure robot permissions
+if [[ -x "./scripts/create_quay_repo.sh" ]]; then
+    echo "Configuring Quay.io repository for ${NEW_PROJECT_NAME}..."
+    ./scripts/create_quay_repo.sh "${NEW_PROJECT_NAME}" "" "private" || echo "Warning: Quay.io repository setup failed. Skipping."
+fi
+
 # Call the external secrets upload script
 ./scripts/upload_secrets_to_github.sh "${NEW_PROJECT_NAME}"
 
