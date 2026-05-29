@@ -59,12 +59,12 @@ def detect_project_info(target_dir):
             owner = owner or r_owner
         if r_project:
             project = project or r_project
-    
+
     if not owner:
         owner = "toozej"
     if not project:
         project = os.path.basename(os.path.abspath(target_dir))
-    
+
     return owner, project
 
 def clone_template():
@@ -92,6 +92,7 @@ def customize_content(content, target_owner, target_project):
 def get_scaffolding_files():
     return [
         ".github/workflows/ci.yaml",
+        ".github/workflows/release.yaml",
         ".github/workflows/weekly-docker-refresh.yaml",
         "Makefile",
         ".goreleaser.yml",
@@ -103,6 +104,8 @@ def get_scaffolding_files():
         "docker-compose.yml",
         "pkg/version/version.go",
         "pkg/version/version_test.go",
+        "pkg/man/man.go",
+        "pkg/man/man_test.go",
         "pkg/config/config.go",
         "pkg/config/config_test.go"
     ]
@@ -130,18 +133,18 @@ def get_template_dockerfiles(template_dir):
 
 def main():
     args = parse_args()
-    
+
     target_dir = os.path.abspath(args.target_dir)
     if not os.path.isdir(target_dir):
         print(f"Error: Target directory does not exist: {target_dir}", file=sys.stderr)
         sys.exit(1)
-        
+
     owner, project = detect_project_info(target_dir)
     print(f"Detected target project configuration:")
     print(f"  Owner/Username: {owner}")
     print(f"  Project Name:   {project}")
     print(f"  Target Dir:     {target_dir}\n")
-    
+
     temp_template_dir = None
     if args.template_dir:
         template_dir = os.path.abspath(args.template_dir)
@@ -151,26 +154,26 @@ def main():
     else:
         temp_template_dir = clone_template()
         template_dir = temp_template_dir
-        
+
     try:
         # 1. Compare standard scaffolding files
         print("=" * 60)
         print("Comparing Scaffolding & Configuration Files")
         print("=" * 60)
-        
+
         scaffolding = get_scaffolding_files()
         for rel_file in scaffolding:
             template_path = os.path.join(template_dir, rel_file)
             target_path = os.path.join(target_dir, rel_file)
-            
+
             if not os.path.exists(template_path):
                 continue
-                
+
             # Read template
             with open(template_path, "r", encoding="utf-8", errors="ignore") as f:
                 template_raw = f.read()
             template_cust = customize_content(template_raw, owner, project)
-            
+
             if not os.path.exists(target_path):
                 print(f"\n[ADD] {rel_file}")
                 print(f"  File exists in template but is missing in target.")
@@ -184,11 +187,11 @@ def main():
                     print(f"... ({len(lines) - 25} more lines)")
                 print("-" * 40)
                 continue
-                
+
             # Read target
             with open(target_path, "r", encoding="utf-8", errors="ignore") as f:
                 target_content = f.read()
-                
+
             if template_cust.strip() == target_content.strip():
                 print(f"[MATCHED] {rel_file}")
             else:
@@ -205,15 +208,15 @@ def main():
                     print("\n".join(diff_list))
                 else:
                     print("  (Only whitespace/ending differences)")
-                    
+
         # 2. Compare and match Dockerfiles by content similarity
         print("\n" + "=" * 60)
         print("Matching and Comparing Dockerfiles (by content similarity)")
         print("=" * 60)
-        
+
         target_dockerfiles = find_target_dockerfiles(target_dir)
         template_dockerfiles = get_template_dockerfiles(template_dir)
-        
+
         if not target_dockerfiles:
             print("No Dockerfiles found in target repo.")
         else:
@@ -225,21 +228,21 @@ def main():
                 best_match_file = None
                 best_match_ratio = -1.0
                 best_match_cust_content = None
-                
+
                 # Check similarity against each customized template Dockerfile
                 for temp_file in template_dockerfiles:
                     temp_path = os.path.join(template_dir, temp_file)
                     with open(temp_path, "r", encoding="utf-8", errors="ignore") as f:
                         temp_raw = f.read()
                     temp_cust = customize_content(temp_raw, owner, project)
-                    
+
                     # Calculate similarity ratio
                     ratio = difflib.SequenceMatcher(None, target_content, temp_cust).ratio()
                     if ratio > best_match_ratio:
                         best_match_ratio = ratio
                         best_match_file = temp_file
                         best_match_cust_content = temp_cust
-                
+
                 print(f"\nTarget File:   {target_rel}")
                 if best_match_file:
                     print(f"Closest Match: {best_match_file} (Similarity: {best_match_ratio:.2%})")
@@ -261,13 +264,13 @@ def main():
                             print("  (Only whitespace/ending differences)")
                 else:
                     print("Could not find any matching template Dockerfile.")
-                    
+
         print("\n" + "=" * 60)
         print("Comparison Completed.")
         print("=" * 60)
         print("Instructions: Please use these diffs to carefully back-fill updates.")
         print("Remember to NOT overwrite target Dockerfiles in their entirety, but merge updates.")
-        
+
     finally:
         if temp_template_dir:
             shutil.rmtree(temp_template_dir)

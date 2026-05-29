@@ -83,8 +83,11 @@ release: ## Build and sign Docker image
 get-cosign-pub-key: ## Get golang-starter Cosign public key from GitHub
 	test -f $(CURDIR)/golang-starter.pub || curl --silent https://raw.githubusercontent.com/toozej/golang-starter/main/golang-starter.pub -O
 
-verify: get-cosign-pub-key ## Verify Docker image with Cosign
-	cosign verify --key $(CURDIR)/golang-starter.pub $(IMAGE_AUTHOR)/$(IMAGE_NAME):$(IMAGE_TAG)
+verify: ## Verify Docker image with Cosign
+	cosign verify \
+		--certificate-identity-regexp '^https://github.com/toozej/golang-starter/.github/workflows/release.yaml@refs/tags/.*$$' \
+		--certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+		$(IMAGE_AUTHOR)/$(IMAGE_NAME):$(IMAGE_TAG)
 
 run: ## Run built Docker image
 	-docker kill $(IMAGE_NAME)

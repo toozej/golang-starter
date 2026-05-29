@@ -15,6 +15,7 @@ Golang starter template
 - Cobra library for CLI handling, Logrus for logging, and GoDotEnv and Env libraries for reading config files already plugged in and ready to expand upon
 - Goreleaser to build Docker images and most standard package types across Linux, MacOS and Windows
     - also includes auto-generated manpages and shell autocompletions
+    - Docker images are signed with Cosign v3 via GoReleaser `docker_signs` using GitHub Actions OIDC certificates (keyless), and should be verified with `cosign verify` using `--certificate-identity-regexp` and `--certificate-oidc-issuer https://token.actions.githubusercontent.com` (not `--key`)
 - Makefile for easy building, deploying, testing, updating, etc. both Dockerized and using locally installed Golang toolchain
 - docker-compose project for easily hosting built Dockerized Golang project, with optional support for Golang web services
 - scripts to make using the starter template easy, and to update the Golang version when a new one comes out
