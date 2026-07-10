@@ -1,5 +1,10 @@
 # golang-starter
 
+**This repository has moved to [monogo](https://github.com/toozej/monogo).**
+
+
+
+
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/toozej/golang-starter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/toozej/golang-starter)](https://goreportcard.com/report/github.com/toozej/golang-starter)
 ![GitHub Actions CI Workflow Status](https://img.shields.io/github/actions/workflow/status/toozej/golang-starter/ci.yaml)
